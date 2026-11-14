@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>삿포로 5일</title>
-<meta name="description" content="강동현·김도현·김정범의 2026년 12월 삿포로 여행 계획">
+<title>셋포로 — 셋이 떠나는 겨울 삿포로</title>
+<meta name="description" content="셋포로 — 셋이 떠나는 겨울 삿포로. 강동현·김도현·김정범의 2026년 12월 삿포로 여행 계획">
 <meta name="theme-color" content="#071B33">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="삿포로">
+<meta name="apple-mobile-web-app-title" content="셋포로">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=3">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=3">
 <link rel="manifest" href="manifest.json">
@@ -68,6 +68,7 @@ a{color:var(--accent)}
 #intro .art{width:min(44vw,220px);aspect-ratio:1;border-radius:22%;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45);animation:pop .9s cubic-bezier(.2,.9,.2,1) both}
 #intro .art svg{display:block;width:100%;height:100%}
 #intro h1{font:900 clamp(34px,9vw,52px)/1 var(--serif);letter-spacing:-.02em;margin:26px 0 8px;text-align:center;animation:rise .8s .25s cubic-bezier(.2,.9,.2,1) both}
+#intro p.tag{font:700 clamp(15px,4.2vw,19px)/1.3 var(--font);letter-spacing:.02em;opacity:.95;margin:0 0 14px}
 #intro p{margin:0;text-align:center;letter-spacing:.24em;font-size:12px;font-weight:700;opacity:.8;animation:rise .8s .4s cubic-bezier(.2,.9,.2,1) both}
 #intro .flake{position:absolute;top:-10px;width:6px;height:6px;border-radius:50%;background:#fff;opacity:.8;animation:fall linear infinite}
 @keyframes pop{from{transform:scale(.6) rotate(-6deg);opacity:0}to{transform:none;opacity:1}}
@@ -351,15 +352,16 @@ dialog h2{font:900 22px/1.2 var(--serif);margin:0}
 <g transform="translate(200 300)" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".85">
 <path d="M0 -52V52M-45 -26L45 26M-45 26L45 -26"/><path d="M-12 -40L0 -28L12 -40M-12 40L0 28L12 40" fill="none"/>
 </g></svg></div>
-    <h1>삿포로, 눈 오는 5일</h1>
+    <h1>셋포로</h1>
+    <p class="tag">셋이 떠나는 겨울 삿포로</p>
     <p>2026 · 12 · 13 — 17</p>
   </div>
 </div>
 
 <header class="appbar">
-  <a class="brand" href="#plan" aria-label="삿포로 5일 홈">
+  <a class="brand" href="#plan" aria-label="셋포로 홈">
     <img src="apple-touch-icon.png?v=3" alt="">
-    <span><b>삿포로 5일</b><small>12.13 (일) — 12.17 (목) · KE769 / YP752</small></span>
+    <span><b>셋포로</b><small>셋이 떠나는 겨울 삿포로 · 12.13–12.17</small></span>
   </a>
   <span class="chip dday num" id="dday">D-0</span>
   <span class="spacer"></span>
@@ -940,7 +942,7 @@ $("abnbForm").addEventListener("submit",e=>{
 /* ---------- KML ---------- */
 const xml=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 function makeKml(){
-  let k='<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>삿포로 5일</name>';
+  let k='<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>셋포로 — 셋이 떠나는 겨울 삿포로</name>';
   const pm=(n,d,p)=>'<Placemark><name>'+xml(n)+'</name><description>'+xml(d)+'</description><Point><coordinates>'+p.lng+','+p.lat+',0</coordinates></Point></Placemark>';
   const bi=baseItem();if(bi)k+='<Folder><name>숙소</name>'+pm(bi.title,"숙소",pos(bi))+'</Folder>';
   DAYS.forEach(D=>{const P=dayPlan(D.k),st=P.stops.filter(pos);if(!st.length)return;k+='<Folder><name>'+D.n+'일차 '+D.l+'</name>';
@@ -958,7 +960,7 @@ async function saveBlob(blob,name){
 }
 async function buildPages(){
   const root=$("exportRoot");
-  root.innerHTML='<div class="xpage" id="xp1"><div class="xhead"><h1>삿포로, 눈 오는 5일</h1><p>2026.12.13 (일) — 12.17 (목) · 강동현 · 김도현 · 김정범 · KE769 / YP752</p></div><div class="agrid">'+agendaHtml(true)+'</div></div>'+
+  root.innerHTML='<div class="xpage" id="xp1"><div class="xhead"><h1>셋포로 <small style="font:700 15px/1 var(--font);color:#4D6481;margin-left:6px">셋이 떠나는 겨울 삿포로</small></h1><p>2026.12.13 (일) — 12.17 (목) · 강동현 · 김도현 · 김정범 · KE769 / YP752</p></div><div class="agrid">'+agendaHtml(true)+'</div></div>'+
     '<div class="xpage" id="xp2"><div class="xhead"><h1>날짜별 동선 지도</h1><p>번호는 1쪽 일정표 순서와 같습니다</p></div>'+
     '<div class="xmaps">'+DAYS.map(d=>'<div class="xmap"><div id="xm-'+d.k+'"></div><span style="background:'+d.c+'">'+d.n+'일차 · '+d.l+' ('+d.w+')</span></div>').join("")+
     '<div class="xlegend"><b>보는 법</b><br>● 숫자: 방문 순서<br>● 테두리 색 핀: 식사 장소 (주황=아침, 빨강=점심, 자주=저녁)<br>● 검은 네모 "숙": 숙소<br>····· 도보 &nbsp; – – – 대중교통 &nbsp; ━ 택시·버스<br><br>실제 경로와 탈 것은 앱의 구간 버튼을 누르면 구글 지도로 확인할 수 있습니다.</div></div></div>';
@@ -986,10 +988,10 @@ async function exportAs(kind){
     if(kind==="pdf"){
       const pdf=new window.jspdf.jsPDF({orientation:"landscape",unit:"mm",format:"a4"});
       canv.forEach((c,i)=>{if(i)pdf.addPage("a4","landscape");pdf.addImage(c.toDataURL("image/jpeg",.92),"JPEG",0,0,297,210)});
-      await saveBlob(pdf.output("blob"),"삿포로_5일_일정표.pdf");
+      await saveBlob(pdf.output("blob"),"셋포로_일정표.pdf");
     }else{
       const W=canv[0].width,H=canv.reduce((a,c)=>a+c.height,0),out=document.createElement("canvas");out.width=W;out.height=H;const g=out.getContext("2d");let y=0;canv.forEach(c=>{g.drawImage(c,0,y);y+=c.height});
-      const blob=await new Promise(r=>out.toBlob(r,"image/png"));await saveBlob(blob,"삿포로_5일_일정표.png");
+      const blob=await new Promise(r=>out.toBlob(r,"image/png"));await saveBlob(blob,"셋포로_일정표.png");
     }
     toast("저장했습니다.");
   }catch(e){console.error(e);toast("만들지 못했습니다. 잠시 후 다시 시도해 주세요.")}
@@ -997,7 +999,7 @@ async function exportAs(kind){
 }
 $("pdfBtn").addEventListener("click",()=>exportAs("pdf"));
 $("pngBtn").addEventListener("click",()=>exportAs("png"));
-$("kmlBtn").addEventListener("click",()=>saveBlob(new Blob([makeKml()],{type:"application/vnd.google-earth.kml+xml"}),"sapporo-plan.kml"));
+$("kmlBtn").addEventListener("click",()=>saveBlob(new Blob([makeKml()],{type:"application/vnd.google-earth.kml+xml"}),"setporo-plan.kml"));
 
 /* ---------- events ---------- */
 document.addEventListener("click",e=>{

@@ -1,6 +1,6 @@
 {
- "name": "삿포로, 눈 오는 5일",
- "short_name": "삿포로",
+ "name": "셋포로 — 셋이 떠나는 겨울 삿포로",
+ "short_name": "셋포로",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
@@ -25,5 +25,6 @@
    "type": "image/png",
    "purpose": "maskable"
   }
- ]
+ ],
+ "description": "셋이 떠나는 겨울 삿포로"
 }
