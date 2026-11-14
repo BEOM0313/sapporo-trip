@@ -1,5 +1,5 @@
 /* 셋포로 오프라인 지원: 앱 화면과 라이브러리를 기기에 저장해 두고, 인터넷이 없을 때 꺼내 씁니다. */
-const V = "setporo-v5";
+const V = "setporo-v6";
 const CORE = ["./", "./index.html", "./manifest.json", "./apple-touch-icon.png", "./icon-192.png", "./icon-512.png"];
 const STATIC_HOSTS = ["unpkg.com", "cdnjs.cloudflare.com", "cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com", "server.arcgisonline.com"];
 const FRESH_HOSTS = ["api.open-meteo.com", "open.er-api.com"];
@@ -19,7 +19,7 @@ function put(req, res) {
   return res;
 }
 function networkFirst(req, fallbackKey) {
-  return fetch(req).then(r => put(req, r)).catch(() =>
+  return fetch(req, { cache: "no-cache" }).then(r => put(req, r)).catch(() =>
     caches.match(req, { ignoreSearch: !!fallbackKey }).then(r => r || (fallbackKey ? caches.match(fallbackKey) : undefined)).then(r => r || Response.error())
   );
 }

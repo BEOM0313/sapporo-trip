@@ -48,7 +48,7 @@ const MEMBERS = ["강동현","김도현","김정범"];
 }
 @media (prefers-color-scheme:dark){:root{
   --bg:#08172A; --bg2:#0C2038; --surface:rgba(18,40,66,.78); --solid:#10253D; --field:#0F2238;
-  --ink:#E4ECF5; --muted:#9AAAC3; --line:rgba(169,186,211,.16); --accent:#5FA2DD; --accent-ink:#06182B; --deep:#A9BAD3;
+  --ink:#E4ECF5; --muted:#9AAAC3; --line:rgba(169,186,211,.16); --accent:#4A95E0; --accent-ink:#FFFFFF; --deep:#2A64A6;
   --good:#6FD0A6; --good-bg:#123326; --warn:#F09583; --warn-bg:#3A1E1A; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.3);
   color-scheme:dark;
 }}
@@ -432,6 +432,20 @@ html{touch-action:manipulation}
   .leg .opts::-webkit-scrollbar{display:none}
   .leg .opts>*{flex:none}
 }
+
+/* ===== header & FAB polish ===== */
+@media (max-width:899px){
+  :root{--appbar:60px}
+  .appbar{background:var(--bg2);box-shadow:0 1px 0 var(--line),0 6px 18px rgba(7,27,51,.06);border-bottom:0}
+}
+@media (prefers-color-scheme:dark){
+  .appbar{background:#0B1D33!important}
+  .chip.dday{background:#2A64A6;color:#fff}
+  .me{background:#13304F;border-color:rgba(169,186,211,.22)}
+  .krw{background:rgba(74,149,224,.18);color:#8EC1F2}
+}
+.fab.hide{transform:translateY(calc(100% + 40px))!important}
+.endadd{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:22px 0 8px}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
 
 /* ===== motion & app feel ===== */
@@ -1078,7 +1092,7 @@ function renderPlan(){
   if(!loaded){$("list").innerHTML=skList();return}
   const days=selDay==="all"?DAYS:DAYS.filter(d=>d.k===selDay);
   setTimeout(streamNow,450);
-  $("list").innerHTML='<div id="nowCard">'+nowHtml()+'</div>'+days.map(dayBlock).join('<div style="height:22px"></div>')+'<div class="row" style="margin:22px 0 8px"><button class="btn sm ghost" type="button" id="restoreBtn">'+(armed==="restore"?"한 번 더 누르면 빠진 기본 일정을 다시 넣습니다":"빠진 기본 일정 다시 넣기")+'</button></div>';
+  $("list").innerHTML='<div id="nowCard">'+nowHtml()+'</div>'+days.map(dayBlock).join('<div style="height:22px"></div>')+'<div class="endadd"><button class="btn primary" type="button" data-addend>+ 일정 추가</button><button class="btn sm ghost" type="button" id="restoreBtn">'+(armed==="restore"?"한 번 더 누르면 빠진 기본 일정을 다시 넣습니다":"빠진 기본 일정 다시 넣기")+'</button></div>';
   drawMap();
 }
 
@@ -1481,7 +1495,9 @@ const canVT=!!document.startViewTransition&&!matchMedia("(prefers-reduced-motion
 if(!canVT)document.documentElement.classList.add("novt");
 function vt(fn){if(canVT){try{document.startViewTransition(fn);return}catch(e){}}fn()}
 document.addEventListener("touchstart",()=>{},{passive:true});
-{let lastY=0;window.addEventListener("scroll",()=>{const y=window.scrollY,f=$("addPlan");if(!f)return;if(y>lastY+8&&y>140)f.classList.add("hide");else if(y<lastY-8||y<140)f.classList.remove("hide");lastY=y},{passive:true})}
+{let lastY=0;const fabUpd=()=>{const y=window.scrollY,f=$("addPlan");if(!f)return;const nearEnd=y+innerHeight>document.documentElement.scrollHeight-260;
+  if(nearEnd||(y>lastY+6&&y>140))f.classList.add("hide");else if(y<lastY-6||y<140)f.classList.remove("hide");lastY=y};
+  window.addEventListener("scroll",fabUpd,{passive:true});window.addEventListener("resize",fabUpd)}
 
 /* ---------- events ---------- */
 document.addEventListener("click",e=>{
@@ -1491,6 +1507,7 @@ document.addEventListener("click",e=>{
   if(ms&&ms.closest("#modeSeg")){$("plan").dataset.mode=ms.dataset.mode;document.querySelectorAll("#modeSeg button").forEach(b=>b.setAttribute("aria-pressed",b===ms));fitKey="";render();return}
   const cs=e.target.closest("[data-c]");
   if(cs){vt(()=>{candCat=cs.dataset.c;openCard=null;cZone="all";cMax=0;if(cSort==="near"&&candCat!=="stays")cSort="rec";render()});return}
+  if(e.target.closest("[data-addend]")){$("addPlan").click();return}
   if(e.target.closest("[data-filter]")){openFilter();return}
   const so=e.target.closest("[data-sort]");if(so){cSort=so.dataset.sort;render();return}
   const z2=e.target.closest("[data-zone2]");if(z2){cZone=z2.dataset.zone2;render();return}
@@ -1558,7 +1575,11 @@ function begin(s,isShared){
 }
 render();
 fireStore().then(s=>begin(s,true)).catch(()=>{connErr=true;begin(localStore(true),false)});
-if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
+if("serviceWorker" in navigator&&location.protocol==="https:"){
+  const hadSW=!!navigator.serviceWorker.controller;let reloaded=false;
+  navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(r=>{r.update().catch(()=>{});document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")r.update().catch(()=>{})})}).catch(()=>{});
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{if(hadSW&&!reloaded){reloaded=true;location.reload()}});
+}
 window.addEventListener("online",render);window.addEventListener("offline",render);
 if(!me)setTimeout(askWho,1900);
 })();
