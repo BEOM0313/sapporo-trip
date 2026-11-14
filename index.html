@@ -410,29 +410,6 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .dcta{position:sticky;bottom:-20px;margin:0 -20px -20px;padding:12px 20px calc(12px + var(--safe-b));background:var(--solid);border-top:1px solid var(--line);display:flex;gap:8px;z-index:5}
 .dcta .btn{flex:1;min-height:48px;font-size:15px}
 
-/* ===== Monimo: missions + snowflake jelly ===== */
-.mission{background:linear-gradient(160deg,color-mix(in srgb,var(--accent) 14%,var(--solid)),var(--solid) 60%);border:1px solid var(--line);border-radius:24px;padding:16px;margin:0 0 16px;box-shadow:var(--shadow)}
-.mission h3{margin:0;font-size:17px;font-weight:900;display:flex;align-items:center;gap:8px}
-.mission .lead{margin:4px 0 12px;color:var(--muted);font-size:13px}
-.team{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
-.mem{background:var(--solid);border:1px solid var(--line);border-radius:18px;padding:10px 6px 8px;text-align:center;position:relative}
-.mem.mine{border-color:var(--pc);box-shadow:0 0 0 2px color-mix(in srgb,var(--pc) 30%,transparent)}
-.mem .flake{font-size:26px;line-height:1.1;display:inline-block}
-.mem.bump .flake{animation:jelly .7s var(--ease-out)}
-@keyframes jelly{0%{transform:scale(1,1)}25%{transform:scale(1.25,.8)}45%{transform:scale(.85,1.2)}65%{transform:scale(1.08,.94)}85%{transform:scale(.98,1.02)}100%{transform:scale(1,1)}}
-.mem b{display:block;font-size:20px;font-weight:900;font-variant-numeric:tabular-nums}
-.mem small{display:block;font-size:11.5px;color:var(--muted);font-weight:700}
-.mem .mbar{height:5px;border-radius:9px;background:var(--field);margin:6px 8px 0;overflow:hidden}.mem .mbar i{display:block;height:100%;border-radius:9px;background:var(--pc);transition:width .6s var(--ease-out)}
-.mlist{display:flex;flex-direction:column;gap:6px}
-.mrow{display:flex;align-items:center;gap:10px;background:var(--solid);border:1px solid var(--line);border-radius:14px;padding:9px 10px 9px 12px}
-.mrow .ck{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;flex:none;font-size:13px;color:#fff;transition:all .25s var(--ease-out)}
-.mrow.done .ck{background:var(--good);border-color:var(--good)}
-.mrow span{flex:1;font-weight:700;font-size:14px}
-.mrow.done span{color:var(--muted);text-decoration:line-through}
-.mrow em{font-style:normal;font-size:12px;font-weight:800;color:var(--accent)}
-.snowfx{position:fixed;inset:0;pointer-events:none;z-index:9600;overflow:hidden}
-.snowfx i{position:absolute;top:-30px;font-style:normal;font-size:var(--s,20px);animation:snowfall var(--d,1.4s) cubic-bezier(.3,.6,.4,1) forwards;opacity:.95}
-@keyframes snowfall{to{transform:translate3d(var(--x,0),105vh,0) rotate(var(--r,180deg));opacity:.2}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
 
 /* ===== motion & app feel ===== */
@@ -652,7 +629,6 @@ dialog::backdrop{transition:opacity .3s}
   <section class="view" id="v-todo" aria-label="준비물">
     <h2>엔화 계산기</h2>
     <div class="fx" id="fx"><input id="fxIn" type="number" inputmode="numeric" min="0" placeholder="엔" aria-label="엔화 금액"><span>엔 =</span><b id="fxOut">₩0</b><div class="q"><button type="button" class="btn sm" data-fx="500">500엔</button><button type="button" class="btn sm" data-fx="1000">1,000엔</button><button type="button" class="btn sm" data-fx="1990">1,990엔</button><button type="button" class="btn sm" data-fx="10000">1만엔</button></div><small id="fxNote"></small></div>
-    <div id="missions"></div>
     <h2>준비물</h2>
     <form class="cform" id="todoForm"><input id="todoIn" maxlength="60" autocomplete="off" placeholder="준비물 추가"><button class="btn primary" type="submit">추가</button></form>
     <div class="row" id="todoSug" style="margin:12px 0"></div>
@@ -1293,36 +1269,7 @@ function drawStayMap(){
 function fxUpd(){const v=Number($("fxIn").value)||0;$("fxOut").textContent=won(yen2won(v));$("fxNote").textContent="100엔 ≈ "+Math.round(JPY*100).toLocaleString("ko-KR")+"원"+(JPYAt?" ("+JPYAt+" 기준 실시간 환율)":" (대략, 인터넷 연결 시 실시간 환율로 바뀜)")+" · 일정 메모의 엔화 금액 옆에도 원화가 자동으로 붙어요. 실제 환전·카드 결제 금액과는 조금 달라요."}
 $("fxIn").addEventListener("input",fxUpd);
 $("fx").addEventListener("click",e=>{const b=e.target.closest("[data-fx]");if(b){$("fxIn").value=b.dataset.fx;fxUpd()}});
-const MISSIONS=[
- ["stay","숙소 후보에 좋아요·글쎄 누르기","stays",n=>items.some(i=>i.cat==="stays"&&i.votes&&i.votes[n])],
- ["tour","버스투어 후보에 투표하기","tours",n=>items.some(i=>i.cat==="tours"&&i.votes&&i.votes[n])],
- ["kr","공항 가기 전 내 일정 넣기","kr",n=>items.some(i=>i.cat==="plan"&&i.kr&&i.who===n)],
- ["talk","아무 일정에나 의견 남기기","plan",n=>comments.some(c=>c.by===n)],
- ["edit","일정이나 후보 하나 추가·수정하기","plan",n=>items.some(i=>i.cat!=="cfg"&&i.cat!=="todo"&&(i.by===n||i.editedBy===n))],
- ["pack","준비물 3개 챙기기","todo",n=>items.filter(i=>i.cat==="todo"&&i.done&&i.doneBy===n).length>=3]
-];
-let missSeen=null,missBump="";
-function renderMissions(){
-  const sc={};MEMBERS.forEach(n=>sc[n]=MISSIONS.filter(m=>m[3](n)).length);
-  const mine=me?MISSIONS.map(m=>[m,m[3](me)]):[];
-  if(me){const key=mine.filter(x=>x[1]).map(x=>x[0][0]).join(",");let prev=null;try{prev=localStorage.getItem("trip-miss-"+me)}catch(e){}
-    if(missSeen===null)missSeen=prev;
-    if(prev!==null&&key.split(",").filter(Boolean).length>prev.split(",").filter(Boolean).length&&loaded){missBump=me;snowBurst();toast("미션 완료! 눈송이 +1 ❄️");setTimeout(()=>{missBump="";},900)}
-    try{localStorage.setItem("trip-miss-"+me,key)}catch(e){}}
-  const tot=MEMBERS.reduce((a,n)=>a+sc[n],0),max=MISSIONS.length*3;
-  let h='<div class="mission"><h3>❄️ 준비 미션</h3><p class="lead">미션을 하나 끝낼 때마다 눈송이를 1개 받아요. 셋이 함께 모은 눈송이 '+tot+' / '+max+'개'+(tot===max?' — 출발 준비 완벽!':'')+'</p><div class="team">';
-  h+=MEMBERS.map(n=>'<div class="mem'+(n===me?" mine":"")+(missBump===n?" bump":"")+'" style="--pc:'+MCOL[n]+'"><span class="flake">❄️</span><b>'+sc[n]+'</b><small>'+esc(n)+(n===me?" (나)":"")+'</small><div class="mbar"><i style="width:'+(sc[n]/MISSIONS.length*100).toFixed(0)+'%"></i></div></div>').join("")+'</div>';
-  if(me)h+='<div class="mlist">'+mine.map(([m,ok])=>'<div class="mrow'+(ok?" done":"")+'"><span class="ck">'+(ok?"✓":"")+'</span><span>'+esc(m[1])+'</span>'+(ok?'<em>+1 ❄️</em>':'<button class="btn sm" type="button" data-mgo="'+m[2]+'">하러 가기</button>')+'</div>').join("")+'</div>';
-  else h+='<button class="btn primary" type="button" id="missWho">이름 고르고 미션 시작</button>';
-  $("missions").innerHTML=h;const mw=$("missWho");if(mw)mw.onclick=askWho;
-}
-function snowBurst(){
-  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
-  const w=document.createElement("div");w.className="snowfx";
-  for(let i=0;i<22;i++){const f=document.createElement("i");f.textContent=i%3?"❄":"❅";f.style.left=Math.random()*100+"%";f.style.setProperty("--s",(14+Math.random()*18)+"px");f.style.setProperty("--d",(1.1+Math.random()*.9)+"s");f.style.setProperty("--x",(Math.random()*80-40)+"px");f.style.setProperty("--r",(Math.random()*360)+"deg");f.style.animationDelay=(Math.random()*.25)+"s";f.style.color=["#5FA2DD","#0B5689","#9CC5EA"][i%3];w.appendChild(f)}
-  document.body.appendChild(w);setTimeout(()=>w.remove(),2400);
-}
-function renderTodo(){fxUpd();if(loaded)renderMissions();
+function renderTodo(){fxUpd();
   {const t=items.filter(i=>i.cat==="todo"),dn=t.filter(i=>i.done).length,pc=t.length?dn/t.length:0,C=2*Math.PI*24;
    if(!$("ringFg")){$("todoRing").innerHTML='<div class="ring"><div class="rt"><svg viewBox="0 0 56 56"><circle class="bg" cx="28" cy="28" r="24"/><circle class="fg" id="ringFg" cx="28" cy="28" r="24" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+C.toFixed(1)+'"/></svg><span id="ringPc">0%</span></div><div><b id="ringT"></b><small id="ringS"></small></div></div>'}
    $("todoRing").hidden=!t.length;requestAnimationFrame(()=>{$("ringFg").setAttribute("stroke-dashoffset",(C*(1-pc)).toFixed(1))});
@@ -1518,7 +1465,6 @@ document.addEventListener("click",e=>{
   if(e.target.closest("[data-addfirst]")){$("addCand").click();return}
   const dt=e.target.closest("[data-detail]");if(dt){openDetail(dt.dataset.detail);return}
   if(e.target.closest("[data-dclose]")){closeDlg($("detailDlg"));return}
-  const mg=e.target.closest("[data-mgo]");if(mg){const g=mg.dataset.mgo;if(g==="stays"||g==="tours"){candCat=g;location.hash="#cand"}else if(g==="kr"){selDay="12-13";location.hash="#plan";setTimeout(()=>{const el=document.querySelector(".perblock");if(el)el.scrollIntoView({behavior:"smooth",block:"center"})},400)}else if(g==="plan")location.hash="#plan";else if(g==="todo")$("todoIn").focus();render();return}
   if(e.target.closest("[data-nowx]")){nowHidden=true;updateNow();return}
   const np=e.target.closest("[data-nowprev]");
   if(np){nowPreview=np.dataset.nowprev||null;if(nowPreview){selDay=nowPreview.slice(0,5)}render();return}
