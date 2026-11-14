@@ -917,7 +917,7 @@ function drawStayMap(){
     stayMarks[x.id]=mk;
   });
   $("stayLegend").innerHTML='<span>점선 구역: Claude 추천 숙소 구역</span><span>가격 태그: 후보 숙소 (1인)</span><span>위치는 대략적</span>';
-  setTimeout(()=>{stayMap.invalidateSize();if(!stayFit&&pts.length){stayFit=true;stayMap.fitBounds(pts.map(p=>[p.lat,p.lng]).concat(ZONES.map(z=>z.b[0]),ZONES.map(z=>z.b[1])),{padding:[30,30],maxZoom:15})}},60);
+  setTimeout(()=>{if($("stayMap").offsetWidth<1)return;stayMap.invalidateSize();if(!stayFit&&pts.length&&$("stayMap").offsetWidth>0){stayFit=true;stayMap.fitBounds(pts.map(p=>[p.lat,p.lng]).concat(ZONES.map(z=>z.b[0]),ZONES.map(z=>z.b[1])),{padding:[30,30],maxZoom:15})}},60);
 }
 
 /* ---------- todo ---------- */
