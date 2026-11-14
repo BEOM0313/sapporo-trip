@@ -531,6 +531,11 @@ html{touch-action:manipulation}
 .rcbtn{border:1px solid var(--line);background:var(--field);border-radius:10px;width:36px;height:36px;font-size:16px;cursor:pointer;flex:none}
 .bamt2 b.todo{color:var(--warn);font-size:13px}
 .rcptbody img{width:100%;border-radius:14px;display:block}
+.pnote{position:relative;z-index:1;display:flex;gap:6px;align-items:flex-start;width:100%;text-align:left;margin-top:8px;padding:8px 11px;border:1px solid color-mix(in srgb,#D9A21B 45%,transparent);background:color-mix(in srgb,#F6D365 22%,var(--solid));border-radius:12px;font:inherit;font-size:13.5px;line-height:1.5;color:var(--ink);cursor:pointer;white-space:pre-wrap;overflow-wrap:anywhere}
+.pnote small{margin-left:auto;flex:none;color:var(--muted);font-size:11px;font-weight:700;align-self:flex-end}
+.pnedit{position:relative;z-index:1;display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.pnedit textarea{width:100%;border:1px solid var(--line);background:var(--field);border-radius:12px;padding:8px 10px;font:inherit;font-size:16px;color:var(--ink);resize:vertical}
+.btn.hasnote{border-color:color-mix(in srgb,#D9A21B 55%,transparent);background:color-mix(in srgb,#F6D365 25%,var(--solid))}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
 
 /* ===== motion & app feel ===== */
@@ -1108,13 +1113,14 @@ function actsHtml(it,decide){
   if(decide)h+='<button class="btn sm ok" type="button" data-act="decide" data-id="'+it.id+'" aria-pressed="'+!!it.decided+'">'+(it.decided?"확정됨":"확정하기")+'</button>';
   if(it.cat==="etc")h+='<button class="btn sm" type="button" data-act="toplan" data-id="'+it.id+'">일정에 넣기</button>';
   const m=mapUrl(it);if(m)h+='<a class="btn sm" href="'+esc(m)+'" target="_blank" rel="noopener noreferrer">구글 지도</a>';
+  if(it.cat==="plan")h+='<button class="btn sm'+(it.note?" hasnote":"")+'" type="button" data-noteedit="'+it.id+'">📝 메모'+(it.note?" 수정":"")+'</button>';
   if(isUrl(it.link))h+='<a class="btn sm" href="'+esc(it.link)+'" target="_blank" rel="noopener noreferrer">링크</a>';
   h+='<span class="spacer"></span><button class="btn sm ghost" type="button" data-act="edit" data-id="'+it.id+'">수정</button>';
   h+='<button class="btn sm ghost danger" type="button" data-act="del" data-id="'+it.id+'">'+(armed===it.id?"정말 삭제":"삭제")+'</button></div>';
   if(up.length||down.length)h+='<div class="counts">'+(up.length?esc(up.join(", "))+" 좋아요":"")+(down.length?" · "+esc(down.join(", "))+" 글쎄":"")+'</div>';
   return h;
 }
-let justOpened=null;
+let justOpened=null,noteEdit=null;
 function stopHtml(s,i,D,label,color){
   const st=toMin(s.time),m=s.meal&&MEAL[s.meal],open=openCard===s.id;
   const nC=comments.filter(c=>c.item===s.id).length,nU=voters(s,1).length;
@@ -1124,6 +1130,8 @@ function stopHtml(s,i,D,label,color){
   h+='<div class="top"><span class="pin" style="background:'+(color||D.c)+'">'+(label||(i+1))+'</span><h4>'+esc(s.title)+'</h4>'+mealTag(s.meal)+'</div>';
   const sub=[];if(st!=null)sub.push(hm(st)+"–"+hm(st+stayOf(s)));if(s.price)sub.push(won(s.price));if(nU)sub.push("좋아요 "+nU);if(nC)sub.push("의견 "+nC);if(!open&&s.memo)sub.push(yen(esc(String(s.memo).slice(0,30)))+(String(s.memo).length>30?"…":""));
   h+='<div class="sub num">'+sub.join(" · ")+'</div>';
+  if(noteEdit===s.id)h+='<div class="pnedit"><textarea id="pn-'+s.id+'" maxlength="500" rows="3" placeholder="예: 예약 이름 김정범, 2층 창가 자리, 현금만 가능">'+esc(s.note||"")+'</textarea><div class="row"><button class="btn sm primary" type="button" data-notesave="'+s.id+'">저장</button><button class="btn sm ghost" type="button" data-notecancel>취소</button></div></div>';
+  else if(s.note)h+='<button class="pnote" type="button" data-noteedit="'+s.id+'"><span>📝</span><span>'+yen(esc(s.note))+'</span>'+(s.noteBy?'<small>'+esc(s.noteBy)+'</small>':'')+'</button>';
   if(open)h+='<div class="more'+(justOpened===s.id?" in":"")+'">'+(s.memo?'<p class="memo">'+yen(esc(s.memo))+'</p>':'')+actsHtml(s,false)+threadHtml(s)+'</div>';
   return h+'</article></div>';
 }
@@ -1272,7 +1280,7 @@ function drawMap(){
   const pts=drawRoutes(layer,days);
   const bi=baseItem(),b=pos(bi);
   if(b){pts.push(b);L.marker(b,{icon:L.divIcon({className:"",html:'<div class="mk hotel">숙</div>',iconSize:[30,30],iconAnchor:[15,15]}),zIndexOffset:500}).bindPopup('<b>'+esc(bi.title)+'</b><br>숙소').addTo(layer)}
-  $("maplegend").innerHTML='<span><svg viewBox="0 0 26 8"><path d="M1 4h24" stroke="#4D6481" stroke-width="3" stroke-dasharray="1 5" stroke-linecap="round"/></svg>도보</span><span><svg viewBox="0 0 26 8"><path d="M1 4h24" stroke="#4D6481" stroke-width="3" stroke-dasharray="6 4"/></svg>대중교통</span><span><svg viewBox="0 0 26 8"><path d="M1 4h24" stroke="#4D6481" stroke-width="3"/></svg>택시</span><span>선을 누르면 경로 안내</span>';
+  $("maplegend").innerHTML='<span><svg viewBox="0 0 26 8"><path d="M1 4h24" stroke="#4D6481" stroke-width="3" stroke-dasharray="1 5" stroke-linecap="round"/></svg>도보</span><span><svg viewBox="0 0 26 8"><path d="M1 4h24" stroke="#4D6481" stroke-width="3" stroke-dasharray="6 4"/></svg>대중교통</span><span><svg viewBox="0 0 26 8"><path d="M1 4h24" stroke="#4D6481" stroke-width="3"/></svg>투어 버스·차량</span><span>선을 누르면 경로 안내</span>';
   const key=selDay+"|"+pts.length+"|"+$("plan").dataset.mode+"|"+$("mapPane").classList.contains("full");
   if(key!==fitKey){fitKey=key;setTimeout(()=>{map.invalidateSize();const usable=pts.filter(p=>!(selDay==="all"&&p.lat>43.3)||true);if(usable.length>1)map.fitBounds(usable.map(p=>[p.lat,p.lng]),{padding:[48,48],maxZoom:15});else if(usable.length)map.setView(usable[0],14)},80)}
 }
@@ -1590,7 +1598,7 @@ let animKey="";
 function render(){
   setTimeout(refreshDetail,0);
   {const k=String(loaded);if(k!==animKey){animKey=k;document.body.classList.add("anim");clearTimeout(render.at);render.at=setTimeout(()=>document.body.classList.remove("anim"),1000)}}
-  const act=document.activeElement,fid=act&&act.id&&(act.id.indexOf("c-")===0||act.id.indexOf("lm-")===0)?act.id:null,sel=fid?act.selectionStart:0;
+  const act=document.activeElement,fid=act&&act.id&&(act.id.indexOf("c-")===0||act.id.indexOf("lm-")===0||act.id.indexOf("pn-")===0)?act.id:null,sel=fid?act.selectionStart:0;
   header();
   const v=view();
   if(v==="plan")renderPlan();else if(v==="week")renderWeek();else if(v==="rec")renderRec();else if(v==="cand"){renderCand();drawStayMap()}else if(v==="todo")renderBudget();
@@ -1711,7 +1719,7 @@ async function buildPages(){
   root.innerHTML='<div class="xpage" id="xp1"><div class="xhead"><h1>셋포로 <small style="font:700 15px/1 var(--font);color:#4D6481;margin-left:6px">셋이 떠나는 겨울 삿포로</small></h1><p>2026.12.13 (일) — 12.17 (목) · 강동현 · 김도현 · 김정범 · KE769 / YP752</p></div><div class="agrid">'+agendaHtml(true)+'</div></div>'+
     '<div class="xpage" id="xp2"><div class="xhead"><h1>날짜별 동선 지도</h1><p>번호는 1쪽 일정표 순서와 같습니다</p></div>'+
     '<div class="xmaps">'+DAYS.map(d=>'<div class="xmap"><div id="xm-'+d.k+'"></div><span style="background:'+d.c+'">'+d.n+'일차 · '+d.l+' ('+d.w+')</span></div>').join("")+
-    '<div class="xlegend"><b>보는 법</b><br>● 숫자: 방문 순서<br>● 테두리 색 핀: 식사 장소 (주황=아침, 빨강=점심, 자주=저녁)<br>● 검은 네모 "숙": 숙소<br>····· 도보 &nbsp; – – – 대중교통 &nbsp; ━ 택시·버스<br><br>실제 경로와 탈 것은 앱의 구간 버튼을 누르면 구글 지도로 확인할 수 있습니다.</div></div></div>';
+    '<div class="xlegend"><b>보는 법</b><br>● 숫자: 방문 순서<br>● 테두리 색 핀: 식사 장소 (주황=아침, 빨강=점심, 자주=저녁)<br>● 검은 네모 "숙": 숙소<br>····· 도보 &nbsp; – – – 대중교통 &nbsp; ━ 투어 버스·차량<br><br>실제 경로와 탈 것은 앱의 구간 버튼을 누르면 구글 지도로 확인할 수 있습니다.</div></div></div>';
   const maps=[],waits=[],b=pos(baseItem());
   DAYS.forEach(D=>{
     const m=L.map("xm-"+D.k,{zoomControl:false,attributionControl:false,preferCanvas:true,fadeAnimation:false,zoomAnimation:false,zoomSnap:.25});
@@ -1774,6 +1782,9 @@ document.addEventListener("click",e=>{
   if(ms&&ms.closest("#modeSeg")){$("plan").dataset.mode=ms.dataset.mode;document.querySelectorAll("#modeSeg button").forEach(b=>b.setAttribute("aria-pressed",b===ms));fitKey="";render();return}
   const cs=e.target.closest("[data-c]");
   if(cs){vt(()=>{candCat=cs.dataset.c;openCard=null;cZone="all";cMax=0;if(cSort==="near"&&candCat!=="stays")cSort="rec";render()});return}
+  const ne=e.target.closest("[data-noteedit]");if(ne){noteEdit=ne.dataset.noteedit;render();setTimeout(()=>{const t=$("pn-"+noteEdit);if(t){t.focus();t.setSelectionRange(t.value.length,t.value.length)}},30);return}
+  if(e.target.closest("[data-notecancel]")){noteEdit=null;render();return}
+  const ns=e.target.closest("[data-notesave]");if(ns){const id=ns.dataset.notesave,t=$("pn-"+id),v=t?t.value.trim():"";if(!store)return;ns.classList.add("loading");store.update("items",id,{note:v,noteBy:v?me:""}).then(()=>{noteEdit=null;render();toast(v?"메모를 저장했어요.":"메모를 지웠어요.")},fail);return}
   const lme=e.target.closest("[data-lmedit]");if(lme){legEdit=lme.dataset.lmedit;render();setTimeout(()=>{const t=$("lm-"+legEdit);if(t){t.focus();t.setSelectionRange(t.value.length,t.value.length)}},30);return}
   if(e.target.closest("[data-lmcancel]")){legEdit=null;render();return}
   const lms=e.target.closest("[data-lmsave]");if(lms){const id=lms.dataset.lmsave,t=$("lm-"+id),v=t?t.value.trim():"";if(!store)return;lms.classList.add("loading");store.update("items",id,{legMemo:v,legMemoBy:me}).then(()=>{legEdit=null;render();toast(v?"이동 메모를 저장했어요.":"이동 메모를 지웠어요.")},fail);return}
