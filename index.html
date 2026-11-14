@@ -224,6 +224,7 @@ body.mapfull{overflow:hidden}
 .mk .fk svg{width:10px;height:10px}
 .mk.hotel{border-radius:9px;background:#071B33}
 .mk.star{width:24px;height:24px;line-height:20px;background:#fff;color:#0B5689;border-color:#0B5689;font-size:13px}
+.ptag{display:inline-block;background:#fff;color:#0E2238;border:1.5px solid #0E2238;border-radius:999px;font:800 11.5px/20px var(--font);padding:0 8px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.25);transform:translateX(-0%)}
 .zlabel{background:rgba(255,255,255,.9);border:0;box-shadow:none;font:700 11.5px/1.2 var(--font);color:#0E2238;padding:2px 6px;border-radius:6px;white-space:nowrap}
 .zlabel::before{display:none}
 .leaflet-popup-content{font:13px/1.45 var(--font);margin:12px 14px}
@@ -383,7 +384,7 @@ dialog h2{font:900 22px/1.2 var(--serif);margin:0}
         <div class="mapctl">
           <button class="btn sm deep" type="button" id="fullBtn">전체화면</button>
           <button class="btn sm" type="button" id="satBtn" aria-pressed="false">위성</button>
-          <button class="btn sm" type="button" id="zoneBtn" aria-pressed="true">숙소 구역</button>
+          <button class="btn sm" type="button" id="zoneBtn" aria-pressed="true">숙소 구역·후보</button>
           <button class="btn sm" type="button" id="recBtn" aria-pressed="false">추천 장소</button>
         </div>
         <div class="maplegend" id="maplegend"></div>
@@ -778,6 +779,10 @@ function drawMap(){
   }
   layer.clearLayers();
   if(showZones)ZONES.forEach(z=>L.rectangle(z.b,{color:z.c,weight:2,fillColor:z.c,fillOpacity:.1,dashArray:"6 6"}).bindTooltip(z.rank+" · "+z.name,{permanent:true,direction:"center",className:"zlabel"}).bindPopup('<b>'+esc(z.rank+" · "+z.name)+'</b><br>좋은 점: '+esc(z.good)+'<br>아쉬운 점: '+esc(z.bad)).addTo(layer));
+  if(showZones)items.filter(x=>x.cat==="stays"&&!x.decided&&pos(x)).forEach(x=>{
+    const t=x.price?"₩"+Math.round(x.price/1000)+"천":"후보";
+    L.marker(pos(x),{icon:L.divIcon({className:"",html:'<div class="ptag">'+t+'</div>',iconSize:[56,24],iconAnchor:[28,12]}),zIndexOffset:-100})
+      .bindPopup((x.photo&&isUrl(x.photo)?'<img src="'+esc(x.photo)+'" alt="" style="width:220px;height:124px;object-fit:cover;border-radius:8px;display:block;margin-bottom:6px">':'')+'<b>'+esc(x.title)+'</b><br>1인 '+won(x.price)+(x.a?'<br><span style="color:#4D6481">'+esc(x.a)+'</span>':'')+(isUrl(x.link)?'<div class="pop-opts"><a href="'+esc(x.link)+'" target="_blank" rel="noopener noreferrer">에어비앤비에서 보기</a></div>':''),{maxWidth:240}).addTo(layer)});
   if(showRec)RECS.forEach((r,i)=>{if(items.some(x=>x.cat==="plan"&&x.title===r.t))return;L.marker([r.lat,r.lng],{icon:L.divIcon({className:"",html:'<div class="mk star">★</div>',iconSize:[24,24],iconAnchor:[12,12]})}).bindPopup('<b>'+esc(r.t)+'</b><br>'+esc(r.why)+'<div class="pop-opts"><a href="#" data-rec="'+i+'">일정에 넣기</a></div>').addTo(layer)});
   const days=selDay==="all"?DAYS:DAYS.filter(d=>d.k===selDay);
   const pts=drawRoutes(layer,days);
