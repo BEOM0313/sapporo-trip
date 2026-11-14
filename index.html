@@ -105,6 +105,13 @@ nav.tabs{display:flex;gap:4px}
   .brand small{display:none}
   main{padding-bottom:calc(var(--navh) + var(--safe-b) + 16px)}
 }
+html{scroll-padding-top:calc(var(--appbar) + var(--safe-t) + 12px)}
+@media (max-width:899px){
+  html,body{overscroll-behavior-y:none}
+  .appbar{position:fixed;left:0;right:0;top:0}
+  main{padding-top:calc(var(--appbar) + var(--safe-t) + 16px)!important;padding-bottom:calc(var(--navh) + var(--safe-b) + 96px)!important}
+  .ccard,.stop,.krblock,.perblock,#stayMapBox{scroll-margin-top:calc(var(--appbar) + var(--safe-t) + 12px)}
+}
 main{max-width:1440px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-left)) 32px}
 .view{display:none}.view.on{display:block}
 .view>h2,.h2{font:900 22px/1.2 var(--serif);letter-spacing:-.02em;margin:4px 0 12px}
@@ -209,6 +216,17 @@ body.mapfull{overflow:hidden}
 .krblock{border:1.5px dashed var(--steel);border-radius:18px;padding:10px 10px 4px;margin:0 0 10px;background:color-mix(in srgb,var(--steel) 8%,transparent)}
 .krhead{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;color:var(--muted);margin:0 0 8px 4px}
 .krhead svg{width:15px;height:15px}
+.perblock{border:1.5px dashed var(--steel);border-radius:18px;padding:10px;margin:0 0 10px;display:flex;flex-direction:column;gap:8px}
+.perblock .krhead{flex-wrap:wrap;margin-bottom:2px}
+.perblock .krhead small{font-weight:600;font-size:11.5px;opacity:.8;margin-left:4px}
+.per{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--pc);border-radius:14px;padding:8px 10px}
+.per.self{box-shadow:0 0 0 2px color-mix(in srgb,var(--pc) 35%,transparent)}
+.perhead{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.perhead .av{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:800}
+.perhead b{font-size:14px}.perhead em{font-style:normal;font-size:10.5px;color:#fff;background:var(--pc);border-radius:999px;padding:1px 6px;margin-left:4px}
+.perhead .spacer{flex:1}
+.pernone{margin:2px 0 2px 34px;font-size:12.5px;color:var(--muted)}
+.per .tl{margin-top:6px}
 .flybar{display:flex;align-items:center;gap:8px;margin:2px 0 12px;padding:8px 12px;border-radius:999px;background:var(--deep);color:#fff;font-size:12.5px;font-weight:800}
 .flybar svg{width:16px;height:16px;flex:none}
 .agkr{margin:4px 8px;padding:6px 8px;border:1px dashed var(--steel);border-radius:10px;font-size:11.5px;color:var(--muted);display:flex;flex-direction:column;gap:2px}
@@ -460,6 +478,7 @@ dialog h2{font:900 22px/1.2 var(--serif);margin:0}
       <div class="two">
         <label class="f" for="fStay">머무는 시간(분)<input id="fStay" type="number" inputmode="numeric" min="5" max="900" step="5"></label>
         <label class="f" for="fKr" style="grid-column:1/-1">어디서<select id="fKr"><option value="">일본 (삿포로·홋카이도)</option><option value="1">한국 (출발 전 · 도착 후)</option></select></label>
+        <label class="f" for="fWho" id="wWho" style="grid-column:1/-1" hidden>누구 일정<select id="fWho"><option value="">같이 (세 명 공통)</option><option>강동현</option><option>김도현</option><option>김정범</option></select></label>
         <label class="f" for="fMeal">식사<select id="fMeal"><option value="">식사 아님</option><option value="b">아침</option><option value="l">점심</option><option value="d">저녁</option><option value="c">카페·간식</option></select></label>
       </div>
       <div class="two">
@@ -588,9 +607,7 @@ const PRESET_KR=[
  {day:"12-13",time:"10:45",stay:30,title:"보안검색·출국심사",place:"인천국제공항 제2여객터미널"},
  {day:"12-13",time:"11:15",stay:40,title:"면세점·게이트 이동",place:"인천국제공항 제2여객터미널",memo:"탑승 시작은 보통 출발 40분 전"},
  {day:"12-13",time:"12:35",stay:5,title:"KE769 출발 (인천 → 신치토세)",place:"인천국제공항 제2여객터미널"},
- {day:"12-17",time:"17:15",stay:45,title:"인천 도착 (YP752) · 입국·수하물",place:"인천국제공항 제1여객터미널",memo:"YP752(에어프레미아)는 제1터미널 도착"},
- {day:"12-17",time:"18:00",stay:60,title:"공항철도·리무진으로 이동",place:"인천국제공항 제1여객터미널"},
- {day:"12-17",time:"19:00",stay:60,meal:"d",title:"마무리 저녁·해산",memo:"선택 일정"}
+ {day:"12-17",time:"17:15",stay:45,title:"인천 도착 (YP752) · 입국·수하물",place:"인천국제공항 제1여객터미널",memo:"YP752(에어프레미아)는 제1터미널 도착. 여기서부터는 각자 일정"}
 ];
 let seedingKr=false;
 async function seedKr(onlyMissing){
@@ -655,7 +672,8 @@ const baseItem=()=>items.find(i=>i.cat==="stays"&&i.decided&&pos(i));
 function dayPlan(k){
   const sortT=(a,b)=>(a.time||"99").localeCompare(b.time||"99")||(a.at||0)-(b.at||0);
   const stops=items.filter(i=>i.cat==="plan"&&(i.day||"")===k&&!i.kr).sort(sortT);
-  const kr=items.filter(i=>i.cat==="plan"&&(i.day||"")===k&&i.kr).sort(sortT);
+  const krAll=items.filter(i=>i.cat==="plan"&&(i.day||"")===k&&i.kr).sort(sortT);
+  const kr=krAll.filter(x=>!x.who),mine=krAll.filter(x=>x.who);
   const firstT=stops.length&&stops[0].time?stops[0].time:(k==="12-17"?"00:00":"99");
   const krBefore=kr.filter(x=>(x.time||"00:00")<firstT),krAfter=kr.filter(x=>krBefore.indexOf(x)<0);
   const b=pos(baseItem()),legs=[];let move=0;
@@ -667,7 +685,7 @@ function dayPlan(k){
   });
   let back=null;
   if(b&&stops.length&&k!=="12-17"){const last=stops[stops.length-1];back=legInfo(pos(last),b,null);if(back){move+=back.min;if(last.time)back.arrive=toMin(last.time)+stayOf(last)+back.min}}
-  return {stops,legs,back,move,base:b,krBefore,krAfter,all:krBefore.concat(stops,krAfter)};
+  return {stops,legs,back,move,base:b,krBefore,krAfter,mine,all:krBefore.concat(stops,krAfter)};
 }
 
 /* ---------- weather ---------- */
@@ -764,9 +782,13 @@ function dayBlock(D){
   h+='<div class="dayactions">'+(P.stops.length>1?'<button class="btn sm" type="button" data-auto="'+D.k+'">시간 자동 맞추기</button>':'')+(r?'<a class="btn sm" href="'+esc(r)+'" target="_blank" rel="noopener noreferrer">하루 동선 구글 지도</a>':'')+'</div>';
   const krBlock=(arr,title)=>arr.length?'<div class="krblock"><div class="krhead">'+ICON.home+esc(title)+'</div><div class="tl">'+arr.map(s=>stopHtml(s,0,D,"한","#5B6B82")).join("")+'</div></div>':"";
   const fly=(t)=>'<div class="flybar">'+ICON.plane+'<span>'+esc(t)+'</span></div>';
-  if(D.k==="12-13"){h+=krBlock(P.krBefore,"한국에서 · 출발 전");if(P.krBefore.length)h+=fly("인천 12:35 → 신치토세 15:20 · KE769")}
-  else h+=krBlock(P.krBefore,"한국에서");
-  if(!P.stops.length&&!P.krAfter.length)return h+(P.krBefore.length?"":'<div class="empty">아직 일정이 없습니다.</div>');
+  const perBlock=(title,hint)=>'<div class="perblock"><div class="krhead">'+ICON.home+esc(title)+'<small>'+esc(hint)+'</small></div>'+MEMBERS.map(n=>{
+      const arr=P.mine.filter(x=>x.who===n),mineSelf=me===n;
+      return '<div class="per'+(mineSelf?" self":"")+'" style="--pc:'+MCOL[n]+'"><div class="perhead"><span class="av" style="background:'+MCOL[n]+'">'+esc(initial(n))+'</span><b>'+esc(n)+(mineSelf?' <em>나</em>':'')+'</b><span class="spacer"></span><button class="btn sm'+(mineSelf?"":" ghost")+'" type="button" data-addkr="'+D.k+'|'+n+'">+ 추가</button></div>'+
+        (arr.length?'<div class="tl">'+arr.map(s=>stopHtml(s,0,D,initial(n),MCOL[n])).join("")+'</div>':'<p class="pernone">아직 없음</p>')+'</div>'}).join("")+'</div>';
+  if(D.k==="12-13"){h+=perBlock("각자 일정 · 공항 오기 전","집에서 출발, 이동, 아침 등 각자 세우기");h+=krBlock(P.krBefore,"같이 · 인천공항");h+=fly("인천 12:35 → 신치토세 15:20 · KE769")}
+  else{h+=krBlock(P.krBefore,"한국에서");if(D.k!=="12-17"&&P.mine.length)h+=perBlock("각자 일정 (한국)","")}
+  if(!P.stops.length&&!P.krAfter.length&&D.k!=="12-17")return h+(P.krBefore.length||P.mine.length?"":'<div class="empty">아직 일정이 없습니다.</div>');
   h+='<div class="tl">';let sun=false;
   P.stops.forEach((s,i)=>{
     h+=legHtml(P.legs[i],i?"":"숙소에서",!i&&P.legs[i]&&typeof P.legs[i].leave==="number"?hm(P.legs[i].leave)+" 출발":"");
@@ -776,7 +798,8 @@ function dayBlock(D){
   });
   if(P.back)h+=legHtml(P.back,"숙소까지",typeof P.back.arrive==="number"?hm(P.back.arrive)+" 도착":"");
   h+='</div>';
-  if(P.krAfter.length){if(D.k==="12-17")h+=fly("신치토세 13:45 → 인천 17:15 · YP752");h+=krBlock(P.krAfter,D.k==="12-17"?"한국에서 · 도착 후":"한국에서")}
+  if(D.k==="12-17"){h+=fly("신치토세 13:45 → 인천 17:15 · YP752");h+=krBlock(P.krAfter,"같이 · 인천 도착");h+=perBlock("각자 일정 · 공항 도착 후","귀가 교통편, 저녁 등 각자 세우기")}
+  else if(P.krAfter.length)h+=krBlock(P.krAfter,"한국에서");
   return h;
 }
 function renderPlan(){
@@ -860,6 +883,7 @@ function agendaHtml(forExport){
     P.stops.forEach((s,i)=>{const t=toMin(s.time),lg=P.legs[i],m=s.meal&&MEAL[s.meal];
       a+='<div class="ag'+(m?" isMeal":"")+'"'+(m?' style="--mc:'+m.c+'"':'')+'><span class="n" style="background:'+D.c+'">'+(i+1)+'</span><span><b>'+(t!=null?hm(t):"미정")+'</b>'+(m?'<i>'+m.l+'</i>':'')+' '+esc(s.title)+(lg&&lg.a?'<em>'+MODE[lg.mode]+' '+(lg.real?"":"약 ")+dur(lg.min)+' 이동</em>':'')+'</span></div>'});
     a+=krRows(P.krAfter,"한국 · 도착 후");
+    if(P.mine.length)a+='<div class="agkr"><b>각자 일정</b>'+P.mine.map(s=>{const t=toMin(s.time);return '<div><i style="--mc:'+MCOL[s.who]+'">'+esc(initial(s.who))+'</i> '+(t!=null?hm(t)+" ":"")+esc(s.title)+'</div>'}).join("")+'</div>';
     if(!P.all.length)a+='<div class="ag"><span></span><span>일정 없음</span></div>';
     return a+'</div>';
   }).join("");
@@ -951,7 +975,7 @@ function openForm(it,asCat){
   $("fTitle").value=g("title");$("fA").value=g("a");$("fB").value=g("b");$("fPlace").value=it?(it.place||it.gmap||""):"";$("fPhoto").value=g("photo");
   $("fPrice").value=it&&it.price?it.price:"";$("fLink").value=g("link");$("fMemo").value=g("memo");
   $("fDay").value=it&&it.day?it.day:(selDay!=="all"?selDay:"12-13");$("fTime").value=g("time");
-  $("fStay").value=it&&it.stay?it.stay:60;$("fMeal").value=g("meal");$("fMode").value=g("mode");$("fTravel").value=it&&it.travel?it.travel:"";$("fKr").value=it&&it.kr?"1":"";
+  $("fStay").value=it&&it.stay?it.stay:60;$("fMeal").value=g("meal");$("fMode").value=g("mode");$("fTravel").value=it&&it.travel?it.travel:"";$("fKr").value=it&&it.kr?"1":"";$("fWho").value=it&&it.who?it.who:"";$("wWho").hidden=$("fKr").value!=="1";
   $("geoRes").innerHTML="";$("geoMsg").textContent="찾기를 누르거나 지도를 눌러 위치를 찍으세요.";
   $("dlg").showModal();
   if(!$("wPlace").hidden&&window.L){
@@ -982,6 +1006,7 @@ $("form").addEventListener("submit",e=>{
   const d={cat:c,title,a:C.a?$("fA").value.trim():"",b:C.b?$("fB").value.trim():"",price:num("fPrice"),link,memo:$("fMemo").value.trim(),photo:C.photo?$("fPhoto").value.trim():"",
     place:hasPlace&&!isUrl(pl)?pl:"",gmap:hasPlace&&isUrl(pl)?pl:"",lat:hasPlace&&formPos?formPos.lat:null,lng:hasPlace&&formPos?formPos.lng:null,
     day:c==="plan"?$("fDay").value:"",time:c==="plan"?$("fTime").value:"",stay:c==="plan"?(num("fStay")||60):0,meal:c==="plan"?$("fMeal").value:"",mode:c==="plan"?$("fMode").value:"",travel:c==="plan"?num("fTravel"):0,kr:c==="plan"&&$("fKr").value==="1"};
+  d.who=d.kr?$("fWho").value:"";
   if(d.kr){d.lat=null;d.lng=null;d.mode="";d.travel=0}
   const btn=$("saveBtn"),was=editing;btn.disabled=true;let p;
   if(was){d.editedBy=me;d.editedAt=Date.now();p=store.update("items",was.id,d)}
@@ -990,6 +1015,9 @@ $("form").addEventListener("submit",e=>{
 });
 
 /* ---------- name picker ---------- */
+/* iOS 홈 화면 앱: 키보드가 닫힌 뒤 화면이 위로 밀린 채 남는 문제 보정 */
+document.addEventListener("focusout",e=>{if(/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))setTimeout(()=>{if(!/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||""))window.scrollTo(window.scrollX,window.scrollY)},80)});
+$("fKr").addEventListener("change",()=>{$("wWho").hidden=$("fKr").value!=="1";if($("fKr").value==="1"&&!$("fWho").value&&me)$("fWho").value=me});
 function askWho(){$("whoGrid").innerHTML=MEMBERS.map(n=>'<button type="button" class="who-btn" data-who="'+n+'" aria-pressed="'+(me===n)+'"><span class="av" style="background:'+MCOL[n]+'">'+initial(n)+'</span>'+n+'</button>').join("");if(!$("whoDlg").open)$("whoDlg").showModal()}
 $("meBtn").addEventListener("click",askWho);
 $("whoLater").addEventListener("click",()=>$("whoDlg").close());
@@ -1088,6 +1116,8 @@ document.addEventListener("click",e=>{
   if(ms&&ms.closest("#modeSeg")){$("plan").dataset.mode=ms.dataset.mode;document.querySelectorAll("#modeSeg button").forEach(b=>b.setAttribute("aria-pressed",b===ms));fitKey="";render();return}
   const cs=e.target.closest("[data-c]");
   if(cs){candCat=cs.dataset.c;openCard=null;render();return}
+  const ak=e.target.closest("[data-addkr]");
+  if(ak){const [dk,who]=ak.dataset.addkr.split("|");openForm(null,"plan");$("fDay").value=dk;$("fKr").value="1";$("fWho").value=who;$("wWho").hidden=false;if(!$("fTime").value)$("fTime").value=dk==="12-13"?"08:00":"18:00";return}
   const sp=e.target.closest("[data-staypin]");
   if(sp){const m=stayMarks[sp.dataset.staypin];if(m&&stayMap){$("stayMapBox").scrollIntoView({behavior:"smooth",block:"start"});stayMap.setView(m.getLatLng(),16);setTimeout(()=>m.openPopup(),350)}return}
   const sc=e.target.closest("[data-showcard]");
