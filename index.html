@@ -213,6 +213,21 @@ body.mapfull{overflow:hidden}
 .sun{display:grid;grid-template-columns:54px 1fr;gap:10px;margin:4px 0}
 .sun span{font-size:11.5px;font-weight:800;color:var(--muted);display:flex;align-items:center;gap:8px}
 .sun span::after{content:"";flex:1;border-top:1px dashed var(--steel)}
+.krw{display:inline-block;margin-left:3px;padding:0 5px;border-radius:999px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);font-size:.86em;font-weight:700;white-space:nowrap}
+.fx{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px 14px;box-shadow:var(--shadow);margin:0 0 14px}
+.fx input{width:120px;border:1px solid var(--line);background:var(--field);border-radius:12px;padding:8px 10px;min-height:42px;font-weight:700}
+.fx b{font-size:18px}.fx small{flex-basis:100%;color:var(--muted);font-size:12px}
+.fx .q{display:flex;gap:6px;flex-wrap:wrap}
+.now{position:relative;background:linear-gradient(135deg,var(--deep),#0B5689);color:#fff;border-radius:22px;padding:14px 16px;margin:0 0 16px;box-shadow:0 10px 30px rgba(7,27,51,.25)}
+.now .lbl{font-size:11.5px;font-weight:800;letter-spacing:.06em;opacity:.75;text-transform:uppercase}
+.now h3{margin:2px 0 4px;font-size:19px;line-height:1.3}
+.now p{margin:0;font-size:13.5px;opacity:.92}
+.now .nx{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.18)}
+.now .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.now .btn{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.28)}
+.now .btn.primary{background:#fff;color:var(--deep);border-color:#fff}
+.now .x{position:absolute;right:10px;top:8px;background:none;border:0;color:#fff;opacity:.7;font-size:12px;font-weight:700}
+.now .bar{height:5px;border-radius:9px;background:rgba(255,255,255,.2);margin:8px 0 2px;overflow:hidden}.now .bar i{display:block;height:100%;background:#fff;border-radius:9px}
 .krblock{border:1.5px dashed var(--steel);border-radius:18px;padding:10px 10px 4px;margin:0 0 10px;background:color-mix(in srgb,var(--steel) 8%,transparent)}
 .krhead{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;color:var(--muted);margin:0 0 8px 4px}
 .krhead svg{width:15px;height:15px}
@@ -235,6 +250,7 @@ body.mapfull{overflow:hidden}
 .agkr i{font-style:normal;font-size:10px;font-weight:800;color:#fff;background:var(--mc);border-radius:999px;padding:0 5px}
 #stayMapBox{position:relative;height:min(48vh,440px);min-height:300px;border-radius:22px;overflow:hidden;isolation:isolate;border:1px solid var(--line);box-shadow:var(--shadow);margin:0 0 14px;background:var(--field)}
 #stayMap{position:absolute;inset:0}
+.card.flash{box-shadow:0 0 0 3px var(--accent)}
 .ccard.flash{box-shadow:0 0 0 3px var(--accent),var(--shadow)}
 .empty{border:1.5px dashed var(--line);border-radius:var(--r);padding:20px;text-align:center;color:var(--muted);font-weight:600}
 .thread{border-top:1px solid var(--line);padding-top:8px;display:flex;flex-direction:column;gap:6px}
@@ -315,7 +331,11 @@ dialog::backdrop{background:rgba(7,27,51,.5)}
 dialog form{padding:20px;display:flex;flex-direction:column;gap:12px}
 dialog h2{font:900 22px/1.2 var(--serif);margin:0}
 .f{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted);font-weight:700;min-width:0}
-.f input,.f select,.f textarea{border:1px solid var(--line);background:var(--field);border-radius:12px;padding:10px 12px;min-height:44px;color:var(--ink);width:100%;font-weight:500}
+dialog{inset:calc(var(--safe-t) + 8px) 0 calc(var(--safe-b) + 8px)!important;max-height:calc(100dvh - var(--safe-t) - var(--safe-b) - 16px)!important;overscroll-behavior:contain}
+.f input[type=time],.f input[type=date]{-webkit-appearance:none;appearance:none;display:block;min-width:0;max-width:100%;box-sizing:border-box;text-align:left}
+.f input::-webkit-date-and-time-value{text-align:left}
+.f{min-width:0}
+.f input,.f select,.f textarea{box-sizing:border-box;max-width:100%;border:1px solid var(--line);background:var(--field);border-radius:12px;padding:10px 12px;min-height:44px;color:var(--ink);width:100%;font-weight:500}
 .f textarea{min-height:72px;resize:vertical}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .pickbox{height:180px;border-radius:12px;overflow:hidden;border:1px solid var(--line);isolation:isolate}
@@ -446,7 +466,7 @@ dialog h2{font:900 22px/1.2 var(--serif);margin:0}
 
   <section class="view" id="v-cand" aria-label="후보">
     <div class="toolbar">
-      <div class="seg" id="candSeg"><button type="button" data-c="stays" aria-pressed="true">숙박</button><button type="button" data-c="flights" aria-pressed="false">항공</button><button type="button" data-c="etc" aria-pressed="false">맛집·기타</button></div>
+      <div class="seg" id="candSeg"><button type="button" data-c="stays" aria-pressed="true">숙박</button><button type="button" data-c="flights" aria-pressed="false">항공</button><button type="button" data-c="tours" aria-pressed="false">투어</button><button type="button" data-c="etc" aria-pressed="false">맛집·기타</button></div>
       <span class="spacer"></span>
       <button class="btn primary" type="button" id="addCand">+ 후보 추가</button>
     </div>
@@ -459,6 +479,8 @@ dialog h2{font:900 22px/1.2 var(--serif);margin:0}
   </section>
 
   <section class="view" id="v-todo" aria-label="준비물">
+    <h2>엔화 계산기</h2>
+    <div class="fx" id="fx"><input id="fxIn" type="number" inputmode="numeric" min="0" placeholder="엔" aria-label="엔화 금액"><span>엔 =</span><b id="fxOut">₩0</b><div class="q"><button type="button" class="btn sm" data-fx="500">500엔</button><button type="button" class="btn sm" data-fx="1000">1,000엔</button><button type="button" class="btn sm" data-fx="1990">1,990엔</button><button type="button" class="btn sm" data-fx="10000">1만엔</button></div><small id="fxNote"></small></div>
     <h2>준비물</h2>
     <form class="cform" id="todoForm"><input id="todoIn" maxlength="60" autocomplete="off" placeholder="준비물 추가"><button class="btn primary" type="submit">추가</button></form>
     <div class="row" id="todoSug" style="margin:12px 0"></div>
@@ -551,6 +573,10 @@ let wx=DAYS.map(()=>({hi:2,lo:-4,p:60,code:73})),wxLive=false;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const won=n=>"₩"+Number(n||0).toLocaleString("ko-KR");
+let JPY=8.6,JPYAt="";try{const r=JSON.parse(localStorage.getItem("trip-jpy")||"null");if(r&&r.v>3&&r.v<20){JPY=r.v;JPYAt=r.d}}catch(e){}
+fetch("https://open.er-api.com/v6/latest/JPY").then(r=>r.json()).then(j=>{const v=j&&j.rates&&j.rates.KRW;if(v>3&&v<20){JPY=v;JPYAt=new Date().toLocaleDateString("ko-KR",{month:"numeric",day:"numeric"});try{localStorage.setItem("trip-jpy",JSON.stringify({v,d:JPYAt}))}catch(e){}if(typeof render==="function")render()}}).catch(()=>{});
+const yen2won=y=>Math.round(y*JPY/10)*10;
+function yen(html){return String(html).replace(/(\d{1,3}(?:,\d{3})+|\d+)(\s?)엔/g,(m,n)=>{const v=Number(n.replace(/,/g,""));return v>=10?m+'<span class="krw">≈'+won(yen2won(v))+'</span>':m})}
 const isUrl=u=>/^https?:\/\//i.test(u||"");
 const toMin=t=>{const p=String(t||"").split(":");return p.length===2?(+p[0])*60+(+p[1]):null};
 const hm=m=>{m=((Math.round(m)%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0")};
@@ -573,9 +599,12 @@ const voters=(it,v)=>Object.keys(it.votes||{}).filter(k=>it.votes[k]===v);
 })();
 
 /* ---------- storage ---------- */
-function localStore(){
+const SNAP="trip-snap-"+TRIP_ID;let offlineSnap=0,snapT=null;
+function saveSnap(){clearTimeout(snapT);snapT=setTimeout(()=>{try{localStorage.setItem(SNAP,JSON.stringify({items,comments,at:Date.now()}))}catch(e){}},800)}
+function localStore(fromSnap){
   const K="trip-local-"+TRIP_ID,subs={};let data=null;
   try{data=JSON.parse(localStorage.getItem(K))}catch(e){}
+  if(fromSnap){try{const sn=JSON.parse(localStorage.getItem(SNAP));if(sn&&sn.items&&sn.items.length){data={items:sn.items,comments:sn.comments||[]};offlineSnap=sn.at||1}}catch(e){}}
   data=data||{items:[],comments:[]};
   const emit=n=>{try{localStorage.setItem(K,JSON.stringify(data))}catch(e){}(subs[n]||[]).forEach(cb=>cb(data[n].map(x=>Object.assign({},x)),{fromCache:false}))};
   return {
@@ -589,7 +618,9 @@ function localStore(){
 async function fireStore(){
   const V="https://www.gstatic.com/firebasejs/10.12.2/";
   const [app,fs]=await Promise.all([import(V+"firebase-app.js"),import(V+"firebase-firestore.js")]);
-  const d=fs.getFirestore(app.initializeApp(FIREBASE_CONFIG)),col=n=>fs.collection(d,"trips",TRIP_ID,n);
+  const a=app.initializeApp(FIREBASE_CONFIG);let d;
+  try{d=fs.initializeFirestore(a,{localCache:fs.persistentLocalCache({tabManager:fs.persistentMultipleTabManager()})})}catch(e){d=fs.getFirestore(a)}
+  const col=n=>fs.collection(d,"trips",TRIP_ID,n);
   return {
     watch(n,cb,err){fs.onSnapshot(col(n),s=>cb(s.docs.map(x=>Object.assign({},x.data(),{id:x.id})),s.metadata),err)},
     add(n,data){return fs.addDoc(col(n),data)},
@@ -609,6 +640,20 @@ const PRESET_KR=[
  {day:"12-13",time:"12:35",stay:5,title:"KE769 출발 (인천 → 신치토세)",place:"인천국제공항 제2여객터미널"},
  {day:"12-17",time:"17:15",stay:45,title:"인천 도착 (YP752) · 입국·수하물",place:"인천국제공항 제1여객터미널",memo:"YP752(에어프레미아)는 제1터미널 도착. 여기서부터는 각자 일정"}
 ];
+const PRESET_TOURS=[
+ {title:"[유투어버스] 비에이·후라노 일일 버스투어",a:"07:00~07:10 삿포로역 북쪽 출구 단체버스 정류장 (겨울엔 오도리역 31번 출구 앞도) · 약 11시간",b:"한국어 가이드 · 점심 불포함(준페이 사전예약 가능)",price:60210,link:"https://www.waug.com/ko/activities/105608",memo:"예시 계획(아침 집합)과 시간이 가장 비슷한 한국어 투어. 겨울엔 청의 호수를 못 갔다는 후기가 있어 코스 확인 필요. 가격은 11/14 와그 기준"},
+ {title:"[아이트립] 비에이·후라노 일일 버스투어 (사계채의 언덕 입장권 포함)",a:"아침 출발 · 삿포로역 북광장 공중화장실 앞 집합",b:"한국어 가이드 · 준페이 도시락은 당일 가이드가 예약 도와줌",price:43000,link:"https://www.waug.com/ko/activities/148018",memo:"와그 매거진 기준 11월 30일까지 특가 4.3만 원. 12/14 출발도 특가인지 결제 전에 확인"},
+ {title:"[엔데이트립] 비에이·후라노 버스투어 (1인부터 출발 확정)",a:"12~3월 코스: 크리스마스 나무, 탁신관, 청의 호수, 흰수염 폭포 등",b:"한국인 가이드 (팁 포함)",price:0,link:"https://www.waug.com/ko/activities/106476",memo:"후기에 빠른 출발·빠른 도착이 장점으로 자주 나옴. 가격은 링크에서 확인"},
+ {title:"비에이 크리스마스 나무 & 청의 호수·닝구르 테라스 겨울 조명 투어",a:"정오 전 삿포로역 북쪽 출구 출발 · 약 10시간 30분 · 크리스마스 나무 → 흰수염 폭포 → 시키사이노오카 스노 파크(70분) → 청의 호수 라이트업 → 닝구르 테라스",b:"영어·일본어·중국어 가이드 (한국어 없음)",price:76803,link:"https://www.waug.com/ko/activities/161134",memo:"아침에 여유 있고 밤 라이트업까지 보는 코스. 대신 그날 저녁 일정(돈돈 야키니쿠)은 다른 날로 옮겨야 함. 가격은 11/14 와그 기준"},
+ {title:"[Klook] 비에이 겨울 청의 호수 & 흰수염 폭포 라이트업 일일 투어",a:"삿포로 출발 · 11~3월 청의 호수 라이트업",b:"후기 4.8점 (164건)",price:0,link:"https://livejapan.com/ko/in-hokkaido/in-pref-hokkaido/in-furano_biei_sounkyo/activity-cherry_blossom_tours/ac0098680/",memo:"가격·가이드 언어는 링크에서 확인"}
+];
+let seedingTours=false;
+async function seedTours(){
+  if(seedingTours||!store)return;seedingTours=true;
+  try{await store.set("items","cfg-seeded-tours",{cat:"cfg",key:"seeded-tours",at:Date.now()});
+    for(let i=0;i<PRESET_TOURS.length;i++)await store.set("items","seedtour-"+String(i).padStart(2,"0"),Object.assign({},BLANK,{cat:"tours",src:"preset",by:"Claude 추천",at:Date.now()},PRESET_TOURS[i]))}catch(e){fail()}
+  seedingTours=false;
+}
 let seedingKr=false;
 async function seedKr(onlyMissing){
   if(seedingKr||!store)return;seedingKr=true;
@@ -711,7 +756,9 @@ function header(){
   document.querySelectorAll(".view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
   $("addPlan").hidden=v!=="plan";
   let n="";
-  if(connErr)n="공유 데이터에 연결하지 못했습니다. 인터넷 연결을 확인하고 새로고침해 주세요. 지금 바꾼 내용은 이 기기에만 저장됩니다.";
+  if(offlineSnap)n="오프라인이라 마지막으로 받은 일정("+new Date(offlineSnap).toLocaleString("ko-KR",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})+")을 보여주고 있어요. 지금 고친 내용은 이 기기에만 남아요.";
+  else if(connErr)n="공유 데이터에 연결하지 못했습니다. 인터넷 연결을 확인하고 새로고침해 주세요. 지금 바꾼 내용은 이 기기에만 저장됩니다.";
+  else if(navigator.onLine===false)n="오프라인 상태예요. 저장된 일정을 보여주고 있고, 고친 내용은 인터넷이 연결되면 자동으로 올라가요. 지도는 연결돼야 보여요.";
   $("notice").innerHTML=n?'<div class="notice">'+esc(n)+'</div>':"";
 }
 function dayPill(d,i,full){
@@ -764,13 +811,13 @@ function actsHtml(it,decide){
 function stopHtml(s,i,D,label,color){
   const st=toMin(s.time),m=s.meal&&MEAL[s.meal],open=openCard===s.id;
   const nC=comments.filter(c=>c.item===s.id).length,nU=voters(s,1).length;
-  let h='<div class="stop"><div class="tm num">'+(st!=null?hm(st):"—")+'<small>'+dur(stayOf(s))+'</small></div>';
+  let h='<div class="stop" id="stop-'+s.id+'"><div class="tm num">'+(st!=null?hm(st):"—")+'<small>'+dur(stayOf(s))+'</small></div>';
   h+='<article class="card'+(m?" meal-card":"")+'"'+(m?' style="--mc:'+m.c+'"':'')+'>';
   h+='<button class="expand" type="button" data-open="'+s.id+'" aria-expanded="'+open+'" aria-label="'+esc(s.title)+' 자세히"></button>';
   h+='<div class="top"><span class="pin" style="background:'+(color||D.c)+'">'+(label||(i+1))+'</span><h4>'+esc(s.title)+'</h4>'+mealTag(s.meal)+'</div>';
-  const sub=[];if(st!=null)sub.push(hm(st)+"–"+hm(st+stayOf(s)));if(s.price)sub.push(won(s.price));if(nU)sub.push("좋아요 "+nU);if(nC)sub.push("의견 "+nC);if(!open&&s.memo)sub.push(esc(String(s.memo).slice(0,30))+(String(s.memo).length>30?"…":""));
+  const sub=[];if(st!=null)sub.push(hm(st)+"–"+hm(st+stayOf(s)));if(s.price)sub.push(won(s.price));if(nU)sub.push("좋아요 "+nU);if(nC)sub.push("의견 "+nC);if(!open&&s.memo)sub.push(yen(esc(String(s.memo).slice(0,30)))+(String(s.memo).length>30?"…":""));
   h+='<div class="sub num">'+sub.join(" · ")+'</div>';
-  if(open)h+='<div class="more">'+(s.memo?'<p class="memo">'+esc(s.memo)+'</p>':'')+actsHtml(s,false)+threadHtml(s)+'</div>';
+  if(open)h+='<div class="more">'+(s.memo?'<p class="memo">'+yen(esc(s.memo))+'</p>':'')+actsHtml(s,false)+threadHtml(s)+'</div>';
   return h+'</article></div>';
 }
 function dayBlock(D){
@@ -802,11 +849,48 @@ function dayBlock(D){
   else if(P.krAfter.length)h+=krBlock(P.krAfter,"한국에서");
   return h;
 }
+let nowPreview=null,nowHidden=false;
+try{const q=new URLSearchParams(location.search).get("now");if(q)nowPreview=q}catch(e){}
+function nowInfo(){
+  let md,min;
+  if(nowPreview){const m=nowPreview.match(/(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);if(m){md=m[1]+"-"+m[2];min=+m[3]*60+ +m[4]}}
+  if(!md){const t=new Date(Date.now()+9*3600e3);md=String(t.getUTCMonth()+1).padStart(2,"0")+"-"+String(t.getUTCDate()).padStart(2,"0");min=t.getUTCHours()*60+t.getUTCMinutes()}
+  return {md,min};
+}
+function nowHtml(){
+  if(nowHidden||!loaded)return "";
+  const {md,min}=nowInfo(),D=DAYS.find(d=>d.k===md);
+  if(!D){
+    const start=Date.UTC(2026,11,13)-9*3600e3,dd=Math.ceil((start-Date.now())/864e5);
+    if(dd<=0)return "";
+    return '<div class="now"><button class="x" type="button" data-nowx>닫기</button><div class="lbl">지금 모드</div><h3>출발까지 '+dd+'일</h3><p>여행 기간(12/13~17)에는 여기에 지금 할 일, 다음 장소, 출발 시각과 길찾기가 떠요.</p><div class="acts"><button class="btn sm" type="button" data-nowprev="12-15 10:50">미리 보기</button></div></div>';
+  }
+  const P=dayPlan(D.k);
+  const list=P.all.concat(P.mine.filter(x=>x.who===me)).filter(x=>toMin(x.time)!=null).sort((a,b)=>toMin(a.time)-toMin(b.time));
+  const cur=list.filter(x=>toMin(x.time)<=min&&min<toMin(x.time)+stayOf(x)).pop();
+  const next=list.find(x=>toMin(x.time)>min);
+  const link=x=>{const p=pos(x);return p?GM+"dir/?api=1&destination="+ll(p)+"&travelmode="+(GMODE[x.mode]||"transit"):(x.place?GM+"search/?api=1&query="+encodeURIComponent(x.place):"")};
+  let h='<div class="now"><button class="x" type="button" data-nowx>닫기</button><div class="lbl">지금 모드 · '+D.n+'일차 '+D.l+' '+hm(min)+(nowPreview?' (미리 보기)':'')+'</div>';
+  if(cur){const st=toMin(cur.time),en=st+stayOf(cur),pc=Math.min(100,Math.max(0,(min-st)/(en-st)*100));
+    h+='<h3>'+esc(cur.title)+'</h3><p>'+hm(st)+'–'+hm(en)+' · '+(en-min)+'분 남음'+(cur.who?' · '+esc(cur.who)+' 일정':'')+'</p><div class="bar"><i style="width:'+pc.toFixed(0)+'%"></i></div>';
+    if(cur.memo)h+='<p style="margin-top:6px">'+yen(esc(String(cur.memo).slice(0,80)))+'</p>'}
+  else if(!next)h+='<h3>오늘 일정 끝</h3><p>수고했어요. 숙소로 돌아가서 쉬어요.</p>';
+  else h+='<h3>자유 시간</h3><p>다음 일정까지 '+dur(toMin(next.time)-min)+' 남았어요.</p>';
+  if(next){
+    const i=P.stops.indexOf(next),lg=i>=0?P.legs[i]:null,st=toMin(next.time),leave=lg?st-lg.min:null;
+    h+='<div class="nx"><div class="lbl">다음</div><h3 style="font-size:17px">'+hm(st)+' '+esc(next.title)+'</h3><p>'+(st-min)+'분 뒤'+(lg?' · '+MODE[lg.mode]+' 약 '+dur(lg.min)+(leave!=null?' → <b>'+hm(leave)+'</b>에 출발'+(leave<=min?' (지금 출발!)':' ('+(leave-min)+'분 뒤)'):''):'')+'</p>';
+    const u=link(next);h+='<div class="acts">'+(u?'<a class="btn sm primary" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">내 위치에서 길찾기</a>':'')+'<button class="btn sm" type="button" data-nowgo="'+next.id+'">일정에서 보기</button></div></div>';
+  }else if(P.base&&D.k!=="12-17"){h+='<div class="acts"><a class="btn sm primary" href="'+esc(GM+"dir/?api=1&destination="+ll(P.base)+"&travelmode=transit")+'" target="_blank" rel="noopener noreferrer">숙소까지 길찾기</a></div>'}
+  if(nowPreview)h+='<div class="acts"><button class="btn sm" type="button" data-nowprev="">미리 보기 끄기</button></div>';
+  return h+'</div>';
+}
+function updateNow(){const el=$("nowCard");if(el)el.innerHTML=nowHtml()}
+setInterval(()=>{if(view()==="plan"&&!nowPreview)updateNow()},60000);
 function renderPlan(){
   dayStrip();
   if(!loaded){$("list").innerHTML='<div class="empty">일정을 불러오는 중…</div>';return}
   const days=selDay==="all"?DAYS:DAYS.filter(d=>d.k===selDay);
-  $("list").innerHTML=days.map(dayBlock).join('<div style="height:22px"></div>')+'<div class="row" style="margin:22px 0 8px"><button class="btn sm ghost" type="button" id="restoreBtn">'+(armed==="restore"?"한 번 더 누르면 빠진 기본 일정을 다시 넣습니다":"빠진 기본 일정 다시 넣기")+'</button></div>';
+  $("list").innerHTML='<div id="nowCard">'+nowHtml()+'</div>'+days.map(dayBlock).join('<div style="height:22px"></div>')+'<div class="row" style="margin:22px 0 8px"><button class="btn sm ghost" type="button" id="restoreBtn">'+(armed==="restore"?"한 번 더 누르면 빠진 기본 일정을 다시 넣습니다":"빠진 기본 일정 다시 넣기")+'</button></div>';
   drawMap();
 }
 
@@ -907,6 +991,7 @@ const CATS={
   plan:{add:"일정 추가",title:["갈 곳·할 일","예: 오타루 운하 산책"],price:"1인 예상 비용(원)"},
   flights:{add:"항공편 후보 추가",title:["항공사·편명","예: 진에어 LJ231"],a:["가는 편","12/13 인천 10:05 → 신치토세 12:50"],b:["오는 편","12/17 신치토세 14:10 → 인천 17:20"],price:"1인 왕복 요금(원)"},
   stays:{add:"숙소 후보 추가",title:["숙소 이름","예: 스스키노 근처 호텔"],a:["교통·가격 메모","스스키노역 도보 5분 · 4박 총 ₩900,000"],b:["방 구성","트리플룸 1개 · 4박"],price:"1인 부담액(원)",place:true,photo:true},
+  tours:{add:"투어 후보 추가",title:["투어 이름","예: 비에이·후라노 일일 버스투어"],a:["출발·코스","07:00 삿포로역 북쪽 출구 · 크리스마스 나무, 흰수염 폭포"],b:["가이드·포함","한국어 가이드 · 점심 불포함"],price:"1인 요금(원)"},
   etc:{add:"맛집·기타 추가",title:["제목","예: 스프카레 맛집"],a:["분류","맛집, 준비물, 교통 등"],price:"1인 예상 비용(원)",place:true}
 };
 function renderCand(){
@@ -918,7 +1003,7 @@ function renderCand(){
     let h='<article class="ccard'+(it.decided?" decided":"")+'" id="card-'+it.id+'">'+(it.photo&&isUrl(it.photo)?'<div class="ph" style="background-image:url(&quot;'+esc(it.photo)+'&quot;)"></div>':'');
     h+='<div class="bd"><div class="row" style="justify-content:space-between;align-items:flex-start"><h4>'+esc(it.title)+'</h4>'+(it.price?'<span class="price">'+won(it.price)+'</span>':'')+'</div>';
     let kv="";if(it.place)kv+='<dt>위치</dt><dd>'+esc(it.place)+'</dd>';if(it.a&&C.a)kv+='<dt>'+C.a[0]+'</dt><dd>'+esc(it.a)+'</dd>';if(it.b&&C.b)kv+='<dt>'+C.b[0]+'</dt><dd>'+esc(it.b)+'</dd>';
-    if(kv)h+='<dl class="kv">'+kv+'</dl>';if(it.memo)h+='<p class="memo">'+esc(it.memo)+'</p>';
+    if(kv)h+='<dl class="kv">'+kv+'</dl>';if(it.memo)h+='<p class="memo">'+yen(esc(it.memo))+'</p>';
     h+=actsHtml(it,true);
     if(candCat==="stays"&&pos(it))h+='<button class="btn sm" type="button" data-staypin="'+it.id+'" style="align-self:flex-start">숙소 지도에서 위치 보기</button>';
     h+='<button class="btn sm ghost" type="button" data-open="'+it.id+'" style="align-self:flex-start">의견 '+comments.filter(c=>c.item===it.id).length+(openCard===it.id?" 닫기":"")+'</button>';
@@ -945,7 +1030,10 @@ function drawStayMap(){
 }
 
 /* ---------- todo ---------- */
-function renderTodo(){
+function fxUpd(){const v=Number($("fxIn").value)||0;$("fxOut").textContent=won(yen2won(v));$("fxNote").textContent="100엔 ≈ "+Math.round(JPY*100).toLocaleString("ko-KR")+"원"+(JPYAt?" ("+JPYAt+" 기준 실시간 환율)":" (대략, 인터넷 연결 시 실시간 환율로 바뀜)")+" · 일정 메모의 엔화 금액 옆에도 원화가 자동으로 붙어요. 실제 환전·카드 결제 금액과는 조금 달라요."}
+$("fxIn").addEventListener("input",fxUpd);
+$("fx").addEventListener("click",e=>{const b=e.target.closest("[data-fx]");if(b){$("fxIn").value=b.dataset.fx;fxUpd()}});
+function renderTodo(){fxUpd();
   const t=items.filter(i=>i.cat==="todo").sort((a,b)=>(a.done?1:0)-(b.done?1:0)||(a.at||0)-(b.at||0));
   $("todoSug").innerHTML=TODO_SUG.filter(s=>!t.some(i=>i.title===s)).map(s=>'<button class="btn sm" type="button" data-sug="'+esc(s)+'">+ '+esc(s)+'</button>').join("");
   $("todos").innerHTML=t.length?t.map(i=>'<label class="todo'+(i.done?" done":"")+'"><input type="checkbox" data-todo="'+i.id+'"'+(i.done?" checked":"")+'><span>'+esc(i.title)+'</span><small>'+esc(i.done?(i.doneBy||"")+" 챙김":"")+'</small><button class="btn sm ghost danger" type="button" data-act="del" data-id="'+i.id+'">'+(armed===i.id?"정말 삭제":"삭제")+'</button></label>').join(""):'<div class="empty">위의 추천 항목을 눌러 추가해 보세요.</div>';
@@ -1116,6 +1204,11 @@ document.addEventListener("click",e=>{
   if(ms&&ms.closest("#modeSeg")){$("plan").dataset.mode=ms.dataset.mode;document.querySelectorAll("#modeSeg button").forEach(b=>b.setAttribute("aria-pressed",b===ms));fitKey="";render();return}
   const cs=e.target.closest("[data-c]");
   if(cs){candCat=cs.dataset.c;openCard=null;render();return}
+  if(e.target.closest("[data-nowx]")){nowHidden=true;updateNow();return}
+  const np=e.target.closest("[data-nowprev]");
+  if(np){nowPreview=np.dataset.nowprev||null;if(nowPreview){selDay=nowPreview.slice(0,5)}render();return}
+  const ng=e.target.closest("[data-nowgo]");
+  if(ng){const it=items.find(x=>x.id===ng.dataset.nowgo);if(it&&it.day&&selDay!=="all"&&selDay!==it.day){selDay=it.day;render()}setTimeout(()=>{const el=$("stop-"+ng.dataset.nowgo);if(el){el.scrollIntoView({behavior:"smooth",block:"center"});const c=el.querySelector(".card");if(c){c.classList.add("flash");setTimeout(()=>c.classList.remove("flash"),1600)}}},60);return}
   const ak=e.target.closest("[data-addkr]");
   if(ak){const [dk,who]=ak.dataset.addkr.split("|");openForm(null,"plan");$("fDay").value=dk;$("fKr").value="1";$("fWho").value=who;$("wWho").hidden=false;if(!$("fTime").value)$("fTime").value=dk==="12-13"?"08:00":"18:00";return}
   const sp=e.target.closest("[data-staypin]");
@@ -1163,11 +1256,15 @@ function begin(s,isShared){
     if(!(meta&&meta.fromCache)&&!items.some(i=>i.cat==="cfg"&&i.key==="seeded")&&!items.some(i=>i.cat!=="cfg"))seedDefaults(false);
     else if(!(meta&&meta.fromCache)&&!seeding&&items.some(i=>i.cat==="cfg"&&i.key==="seeded")&&!items.some(i=>i.cat==="cfg"&&i.key==="seeded-kr"))seedKr(false);
     if(!(meta&&meta.fromCache))[["seedkr-07","공항철도·리무진으로 이동"],["seedkr-08","마무리 저녁·해산"]].forEach(([id,t])=>{const x=items.find(i=>i.id===id);if(x&&x.src==="preset"&&x.title===t&&!x.who)store.del("items",id).catch(()=>{})});
+    if(isShared&&!(meta&&meta.fromCache)&&items.some(i=>i.cat==="cfg"&&i.key==="seeded")&&!items.some(i=>i.cat==="cfg"&&i.key==="seeded-tours"))seedTours();
+    if(isShared)saveSnap();
     render()},()=>{connErr=true;loaded=true;render()});
-  s.watch("comments",d=>{comments=d;render()},()=>{});
+  s.watch("comments",d=>{comments=d;if(isShared)saveSnap();render()},()=>{});
 }
 render();
-fireStore().then(s=>begin(s,true)).catch(()=>{connErr=true;begin(localStore(),false)});
+fireStore().then(s=>begin(s,true)).catch(()=>{connErr=true;begin(localStore(true),false)});
+if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
+window.addEventListener("online",render);window.addEventListener("offline",render);
 if(!me)setTimeout(askWho,1900);
 })();
 </script>
