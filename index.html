@@ -373,6 +373,114 @@ dialog{inset:calc(var(--safe-t) + 8px) 0 calc(var(--safe-b) + 8px)!important;max
 .xmap>div{position:absolute;inset:0}
 .xmap>span{position:absolute;z-index:600;left:8px;top:8px;background:#071B33;color:#fff;font-weight:800;font-size:13px;padding:3px 10px;border-radius:8px}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
+
+/* ===== motion & app feel ===== */
+:root{--ease-out:cubic-bezier(.23,1,.32,1);--ease-drawer:cubic-bezier(.32,.72,0,1)}
+body{font-size:15.5px;line-height:1.55}
+.card h4{font-size:16px}
+.card .sub{font-size:13px}
+.memo{font-size:14.5px;line-height:1.62}
+.card{transition:transform .16s var(--ease-out),box-shadow .2s}
+.card:has(.expand:active){transform:scale(.985)}
+.ccard{transition:transform .16s var(--ease-out)}
+.todo{transition:transform .14s var(--ease-out),opacity .2s}
+.todo:active{transform:scale(.985)}
+.seg button{transition:background .2s,color .2s,box-shadow .2s}
+.dpill{transition:transform .12s var(--ease-out),background .22s,color .22s,border-color .22s}
+#toast{transform:translate(-50%,10px);transition:opacity .2s,transform .32s var(--ease-out)}
+#toast.on{transform:translate(-50%,0)}
+@media (hover:hover) and (pointer:fine){.ccard:hover{transform:translateY(-2px)}}
+
+/* view & list entrance (only when the screen changes, not on every data update) */
+.view.on{animation:viewIn .32s var(--ease-out) both}
+@keyframes viewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+body.anim .tl>.stop,body.anim .ccard,body.anim .agcol,body.anim .todo,body.anim .krblock,body.anim .perblock,body.anim .now,body.anim .meals,body.anim .flybar{animation:rise .42s var(--ease-out) both}
+body.anim .tl>:nth-child(2){animation-delay:30ms}body.anim .tl>:nth-child(3){animation-delay:60ms}body.anim .tl>:nth-child(4){animation-delay:90ms}
+body.anim .tl>:nth-child(5){animation-delay:120ms}body.anim .tl>:nth-child(6){animation-delay:150ms}body.anim .tl>:nth-child(7){animation-delay:180ms}
+body.anim .tl>:nth-child(8){animation-delay:210ms}body.anim .tl>:nth-child(n+9){animation-delay:240ms}
+body.anim .grid>:nth-child(2),body.anim .stack>:nth-child(2){animation-delay:40ms}body.anim .grid>:nth-child(3),body.anim .stack>:nth-child(3){animation-delay:80ms}
+body.anim .grid>:nth-child(4),body.anim .stack>:nth-child(4){animation-delay:120ms}body.anim .grid>:nth-child(n+5),body.anim .stack>:nth-child(n+5){animation-delay:160ms}
+body.anim .tab[aria-current="page"] svg{animation:tabpop .4s var(--ease-out)}
+@keyframes tabpop{0%{transform:scale(.8)}60%{transform:scale(1.12)}100%{transform:none}}
+
+/* 02 skeleton */
+.sk{position:relative;overflow:hidden;background:color-mix(in srgb,var(--ink) 8%,transparent);border-radius:10px}
+.sk::after,.ph::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);animation:shimmer 1.3s infinite}
+@keyframes shimmer{to{transform:translateX(100%)}}
+.skrow{display:grid;grid-template-columns:54px 1fr;gap:10px;margin-bottom:12px}
+.skcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:8px}
+.skgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+
+/* 06 blur-up image */
+.ccard .ph{position:relative;overflow:hidden;background:var(--field)}
+.ccard .ph::before{content:"";position:absolute;inset:-12px;background:var(--lq,none) center/cover;filter:blur(14px);transform:scale(1.1)}
+.ccard .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;filter:blur(10px);transform:scale(1.04);transition:opacity .4s var(--ease-out),filter .6s var(--ease-out),transform .6s var(--ease-out);z-index:1}
+.ccard .ph img.ok{opacity:1;filter:none;transform:none}
+.ccard .ph:has(img.ok)::after{display:none}
+
+/* 07 optimistic like */
+.btn.pop{animation:pop .38s var(--ease-out)}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.14)}100%{transform:scale(1)}}
+
+/* 09 loading button + 01 spinner */
+.spin{display:inline-block;width:18px;height:18px;border-radius:50%;border:2.5px solid color-mix(in srgb,var(--accent) 25%,transparent);border-top-color:var(--accent);animation:rot .7s linear infinite;flex:none}
+@keyframes rot{to{transform:rotate(360deg)}}
+.btn.loading{position:relative;color:transparent!important;pointer-events:none}
+.btn.loading::after{content:"";position:absolute;left:50%;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;animation:rot .7s linear infinite}
+.btn.loading:not(.primary):not(.deep)::after{border-color:color-mix(in srgb,var(--accent) 25%,transparent);border-top-color:var(--accent)}
+.mapspin{position:absolute;inset:0;z-index:500;display:grid;place-content:center;justify-items:center;gap:10px;background:var(--field);color:var(--muted);font-size:13px;font-weight:700;transition:opacity .35s,visibility .35s}
+.mapspin .spin{width:26px;height:26px}
+.mapspin.off{opacity:0;visibility:hidden}
+
+/* 03 progress bar + 05 stepper */
+.prog{position:fixed;left:50%;bottom:calc(var(--navh) + var(--safe-b) + 18px);transform:translateX(-50%);z-index:9400;width:min(360px,calc(100% - 32px));background:var(--solid);border:1px solid var(--line);border-radius:20px;box-shadow:0 18px 48px rgba(7,27,51,.25);padding:14px 16px;animation:rise .3s var(--ease-out)}
+@media (min-width:900px){.prog{bottom:24px}}
+.prog b{font-size:14px}
+.stepper{display:flex;align-items:center;list-style:none;margin:10px 0;padding:0;font-size:12px;font-weight:700;color:var(--muted)}
+.stepper li{display:flex;align-items:center;gap:6px;flex:1}
+.stepper li::before{content:attr(data-n);display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);background:var(--field);font-size:11px;transition:all .25s var(--ease-out)}
+.stepper li:not(:last-child)::after{content:"";flex:1;height:2px;background:var(--line);margin:0 6px;border-radius:2px}
+.stepper li.on{color:var(--ink)}.stepper li.on::before{border-color:var(--accent);color:var(--accent);background:var(--solid)}
+.stepper li.done::before{content:"✓";background:var(--accent);border-color:var(--accent);color:#fff}
+.pbar{height:6px;border-radius:9px;background:var(--field);overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:var(--accent);border-radius:9px;transition:width .35s var(--ease-out)}
+.prog small{display:block;margin-top:6px;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+
+/* 04 progress ring */
+.ring{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px 14px;margin:0 0 12px;box-shadow:var(--shadow)}
+.ring svg{width:56px;height:56px;transform:rotate(-90deg);flex:none}
+.ring circle{fill:none;stroke-width:6}
+.ring .bg{stroke:var(--field)}.ring .fg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .6s var(--ease-out)}
+.ring .rt{position:relative}.ring .rt span{position:absolute;inset:0;display:grid;place-items:center;font-weight:800;font-size:13px;font-variant-numeric:tabular-nums}
+.ring b{display:block;font-size:15px}.ring small{color:var(--muted);font-size:12.5px}
+
+/* 08 streaming text */
+.stream::after{content:"";display:inline-block;width:2px;height:1em;margin-left:2px;vertical-align:-2px;background:currentColor;animation:blink .9s steps(1) infinite}
+.stream.done::after{display:none}
+@keyframes blink{50%{opacity:0}}
+
+/* bottom sheet (mobile) */
+.shead{position:sticky;top:-20px;z-index:5;margin:-20px -20px 0;padding:10px 20px 10px;background:var(--solid);display:flex;flex-direction:column;align-items:stretch;gap:6px;border-bottom:1px solid transparent}
+.grab{display:none;width:38px;height:5px;border-radius:9px;background:color-mix(in srgb,var(--ink) 20%,transparent);align-self:center}
+#form .dacts{position:sticky;bottom:-20px;z-index:5;margin:0 -20px -20px;padding:12px 20px calc(12px + var(--safe-b));background:var(--solid);border-top:1px solid var(--line)}
+#form .dacts .btn{min-height:46px;padding:0 22px;font-size:15px}
+dialog.closing{animation:sheetOut .2s ease-in forwards}
+@keyframes sheetOut{to{opacity:0;transform:translateY(16px) scale(.98)}}
+@media (max-width:899px){
+  dialog{inset:auto 0 0 0!important;margin:0 auto!important;width:100%!important;max-width:640px;border-radius:26px 26px 0 0;border-bottom:0;max-height:calc(100dvh - var(--safe-t) - 12px)!important}
+  dialog[open]{animation:sheetUp .42s var(--ease-drawer)}
+  dialog.closing{animation:sheetDown .24s ease-in forwards}
+  .grab{display:block}
+  #whoForm{padding-bottom:calc(20px + var(--safe-b))}
+  #form .dacts .btn{flex:1}
+  .view>h2{font-size:26px;margin-top:8px}
+}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes sheetDown{to{transform:translateY(100%)}}
+dialog::backdrop{transition:opacity .3s}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
@@ -431,6 +539,7 @@ dialog{inset:calc(var(--safe-t) + 8px) 0 calc(var(--safe-b) + 8px)!important;max
     <div class="plan" id="plan" data-mode="list">
       <div class="pane-list" id="list"></div>
       <div class="pane-map" id="mapPane">
+        <div class="mapspin"><span class="spin"></span>지도 불러오는 중</div>
         <div id="map"></div>
         <div class="mapdays" id="mapdays"></div>
         <div class="mapctl">
@@ -474,7 +583,7 @@ dialog{inset:calc(var(--safe-t) + 8px) 0 calc(var(--safe-b) + 8px)!important;max
       <input id="abnbIn" inputmode="url" autocomplete="off" placeholder="에어비앤비 숙소 링크 붙여넣기 (airbnb.co.kr/rooms/...)">
       <button class="btn deep" type="submit">숙소 추가</button>
     </form>
-    <div id="stayMapBox" hidden><div id="stayMap"></div><div class="maplegend" id="stayLegend"></div></div>
+    <div id="stayMapBox" hidden><div class="mapspin"><span class="spin"></span>지도 불러오는 중</div><div id="stayMap"></div><div class="maplegend" id="stayLegend"></div></div>
     <div class="grid" id="cands"></div>
   </section>
 
@@ -484,13 +593,14 @@ dialog{inset:calc(var(--safe-t) + 8px) 0 calc(var(--safe-b) + 8px)!important;max
     <h2>준비물</h2>
     <form class="cform" id="todoForm"><input id="todoIn" maxlength="60" autocomplete="off" placeholder="준비물 추가"><button class="btn primary" type="submit">추가</button></form>
     <div class="row" id="todoSug" style="margin:12px 0"></div>
+    <div id="todoRing"></div>
     <div class="stack" id="todos"></div>
   </section>
 </main>
 
 <dialog id="dlg">
   <form id="form" novalidate>
-    <h2 id="dlgTitle">일정 추가</h2>
+    <div class="shead"><span class="grab"></span><h2 id="dlgTitle">일정 추가</h2></div>
     <label class="f" for="fTitle"><span id="lTitle">제목</span><input id="fTitle" maxlength="80" autocomplete="off"></label>
     <div id="planFields" class="stack">
       <div class="two">
@@ -526,6 +636,7 @@ dialog{inset:calc(var(--safe-t) + 8px) 0 calc(var(--safe-b) + 8px)!important;max
 
 <dialog id="whoDlg">
   <form id="whoForm" novalidate>
+    <span class="grab"></span>
     <h2>누구세요?</h2>
     <p style="margin:0;color:var(--muted);font-size:13.5px">고른 이름으로 일정, 투표, 댓글이 표시됩니다. 이 기기에서는 한 번만 고르면 됩니다.</p>
     <div class="who-grid" id="whoGrid"></div>
@@ -534,6 +645,7 @@ dialog{inset:calc(var(--safe-t) + 8px) 0 calc(var(--safe-b) + 8px)!important;max
 </dialog>
 
 <div id="toast" role="status"></div>
+<div class="prog" id="prog" hidden role="status" aria-live="polite"><b id="progT">일정표 만드는 중</b><ol class="stepper" id="progSteps"><li data-n="1">준비</li><li data-n="2">그리기</li><li data-n="3">저장</li></ol><div class="pbar"><i id="progBar"></i></div><small id="progP">0%</small></div>
 <div id="exportRoot" aria-hidden="true"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -585,6 +697,11 @@ const stayOf=it=>Number(it.stay)||60;
 const pos=it=>it&&typeof it.lat==="number"&&typeof it.lng==="number"?{lat:it.lat,lng:it.lng}:null;
 const view=()=>{const h=location.hash.replace("#","");return TABS.some(t=>t[0]===h)?h:"plan"};
 const initial=n=>n?n.slice(1,2):"?";
+const skLine=(w,h)=>'<div class="sk" style="width:'+w+';height:'+(h||12)+'px"></div>';
+function skList(){let h='<div class="sk" style="height:110px;border-radius:22px;margin-bottom:16px"></div>';for(let i=0;i<4;i++)h+='<div class="skrow"><div>'+skLine("40px",14)+'</div><div class="skcard">'+skLine(["70%","55%","80%","60%"][i],16)+skLine("40%")+'</div></div>';return h}
+function skCards(n){let h='<div class="skgrid">';for(let i=0;i<n;i++)h+='<div class="skcard" style="padding:0;overflow:hidden"><div class="sk" style="height:150px;border-radius:0"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:8px">'+skLine("70%",16)+skLine("50%")+skLine("85%")+'</div></div>';return h+'</div>'}
+const imgOk=new Set();window.__imgOk=el=>{imgOk.add(el.getAttribute("src"));el.classList.add("ok")};
+const lowQ=u=>/muscache\.com/.test(u)?(u.split("?")[0]+"?im_w=64"):"";
 function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("on"),2600)}
 const fail=()=>toast("저장하지 못했습니다. 인터넷 연결을 확인해 주세요.");
 const voters=(it,v)=>Object.keys(it.votes||{}).filter(k=>it.votes[k]===v);
@@ -794,11 +911,12 @@ function threadHtml(it){
   cs.forEach(c=>{h+='<div class="cm"><span class="av" style="background:'+(MCOL[c.by]||"")+'">'+esc(initial(c.by))+'</span><span class="txt"><b>'+esc(c.by||"누군가")+'</b> '+esc(c.text)+'</span><button class="x" type="button" data-act="cdel" data-id="'+c.id+'" aria-label="댓글 삭제">×</button></div>'});
   return h+'<form class="cform" data-item="'+it.id+'"><input id="c-'+it.id+'" maxlength="500" autocomplete="off" placeholder="의견 남기기" value="'+esc(drafts[it.id]||"")+'"><button class="btn sm" type="submit">등록</button></form></div>';
 }
+let popKey="";
 function actsHtml(it,decide){
   const up=voters(it,1),down=voters(it,-1),mine=(it.votes||{})[me]||0;
   let h='<div class="row">';
-  h+='<button class="btn sm" type="button" data-act="up" data-id="'+it.id+'" aria-pressed="'+(mine===1)+'">좋아요 '+up.length+'</button>';
-  h+='<button class="btn sm" type="button" data-act="down" data-id="'+it.id+'" aria-pressed="'+(mine===-1)+'">글쎄 '+down.length+'</button>';
+  h+='<button class="btn sm'+(popKey===it.id+"up"?" pop":"")+'" type="button" data-act="up" data-id="'+it.id+'" aria-pressed="'+(mine===1)+'">좋아요 '+up.length+'</button>';
+  h+='<button class="btn sm'+(popKey===it.id+"down"?" pop":"")+'" type="button" data-act="down" data-id="'+it.id+'" aria-pressed="'+(mine===-1)+'">글쎄 '+down.length+'</button>';
   if(decide)h+='<button class="btn sm ok" type="button" data-act="decide" data-id="'+it.id+'" aria-pressed="'+!!it.decided+'">'+(it.decided?"확정됨":"확정하기")+'</button>';
   if(it.cat==="etc")h+='<button class="btn sm" type="button" data-act="toplan" data-id="'+it.id+'">일정에 넣기</button>';
   const m=mapUrl(it);if(m)h+='<a class="btn sm" href="'+esc(m)+'" target="_blank" rel="noopener noreferrer">구글 지도</a>';
@@ -863,7 +981,7 @@ function nowHtml(){
   if(!D){
     const start=Date.UTC(2026,11,13)-9*3600e3,dd=Math.ceil((start-Date.now())/864e5);
     if(dd<=0)return "";
-    return '<div class="now"><button class="x" type="button" data-nowx>닫기</button><div class="lbl">지금 모드</div><h3>출발까지 '+dd+'일</h3><p>여행 기간(12/13~17)에는 여기에 지금 할 일, 다음 장소, 출발 시각과 길찾기가 떠요.</p><div class="acts"><button class="btn sm" type="button" data-nowprev="12-15 10:50">미리 보기</button></div></div>';
+    return '<div class="now"><button class="x" type="button" data-nowx>닫기</button><div class="lbl">지금 모드</div><h3>출발까지 '+dd+'일</h3><p class="streamable">여행 기간(12/13~17)에는 여기에 지금 할 일, 다음 장소, 출발 시각과 길찾기가 떠요.</p><div class="acts"><button class="btn sm" type="button" data-nowprev="12-15 10:50">미리 보기</button></div></div>';
   }
   const P=dayPlan(D.k);
   const list=P.all.concat(P.mine.filter(x=>x.who===me)).filter(x=>toMin(x.time)!=null).sort((a,b)=>toMin(a.time)-toMin(b.time));
@@ -884,12 +1002,18 @@ function nowHtml(){
   if(nowPreview)h+='<div class="acts"><button class="btn sm" type="button" data-nowprev="">미리 보기 끄기</button></div>';
   return h+'</div>';
 }
+let streamed=false;
+function streamNow(){if(streamed)return;const el=document.querySelector("#nowCard .streamable, #nowCard h3");if(!el)return;streamed=true;
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const full=el.textContent;let i=0;el.textContent="";el.classList.add("stream");
+  const t=setInterval(()=>{i+=2;el.textContent=full.slice(0,i);if(i>=full.length){clearInterval(t);el.classList.add("done")}},22)}
 function updateNow(){const el=$("nowCard");if(el)el.innerHTML=nowHtml()}
 setInterval(()=>{if(view()==="plan"&&!nowPreview)updateNow()},60000);
 function renderPlan(){
   dayStrip();
-  if(!loaded){$("list").innerHTML='<div class="empty">일정을 불러오는 중…</div>';return}
+  if(!loaded){$("list").innerHTML=skList();return}
   const days=selDay==="all"?DAYS:DAYS.filter(d=>d.k===selDay);
+  setTimeout(streamNow,450);
   $("list").innerHTML='<div id="nowCard">'+nowHtml()+'</div>'+days.map(dayBlock).join('<div style="height:22px"></div>')+'<div class="row" style="margin:22px 0 8px"><button class="btn sm ghost" type="button" id="restoreBtn">'+(armed==="restore"?"한 번 더 누르면 빠진 기본 일정을 다시 넣습니다":"빠진 기본 일정 다시 넣기")+'</button></div>';
   drawMap();
 }
@@ -902,7 +1026,9 @@ function makeBase(sat){
   if(gmState==="ok"&&L.gridLayer&&L.gridLayer.googleMutant)return L.gridLayer.googleMutant({type:sat?"hybrid":"roadmap",maxZoom:20});
   const t=TILES[sat?"sat":"esri"];return L.tileLayer(t[0],t[1]);
 }
-function baseLayer(m,sat){if(ALL_MAPS.indexOf(m)<0)ALL_MAPS.push(m);if(m._tl)m.removeLayer(m._tl);m._sat=!!sat;m._tl=makeBase(sat).addTo(m);if(m._tl.bringToBack)m._tl.bringToBack();return m._tl}
+function baseLayer(m,sat){if(ALL_MAPS.indexOf(m)<0)ALL_MAPS.push(m);if(m._tl)m.removeLayer(m._tl);m._sat=!!sat;m._tl=makeBase(sat).addTo(m);if(m._tl.bringToBack)m._tl.bringToBack();
+  const par=m.getContainer().parentElement,sp=par&&par.querySelector(":scope>.mapspin");if(sp&&!sp.classList.contains("off")){const h=()=>sp.classList.add("off");if(m._tl.once)m._tl.once("load",h);setTimeout(h,5000)}
+  return m._tl}
 window.gm_authFailure=function(){gmState="failed";ALL_MAPS.forEach(m=>baseLayer(m,m._sat))};
 window.__gmReady=function(){const p=document.createElement("script");p.src="https://unpkg.com/leaflet.gridlayer.googlemutant@0.13.5/dist/Leaflet.GoogleMutant.js";p.onload=()=>{if(gmState!=="failed"){gmState="ok";ALL_MAPS.forEach(m=>baseLayer(m,m._sat))}};p.onerror=()=>{gmState="failed"};document.head.appendChild(p)};
 if(GOOGLE_MAPS_KEY){const g=document.createElement("script");g.src="https://maps.googleapis.com/maps/api/js?key="+encodeURIComponent(GOOGLE_MAPS_KEY)+"&language=ko&region=JP&loading=async&callback=__gmReady";g.async=true;g.onerror=()=>{gmState="failed"};document.head.appendChild(g)}
@@ -973,6 +1099,7 @@ function agendaHtml(forExport){
   }).join("");
 }
 function renderWeek(){
+  if(!loaded){$("agenda").innerHTML=skCards(3);return}
   $("agenda").innerHTML=agendaHtml();
   const sumOf=f=>items.filter(f).reduce((a,i)=>a+(Number(i.price)||0),0);
   const rows=[["항공 (확정)",sumOf(i=>i.cat==="flights"&&i.decided)],["숙박 (확정)",sumOf(i=>i.cat==="stays"&&i.decided)],["일정·식비",sumOf(i=>i.cat==="plan")],["기타 (확정)",sumOf(i=>i.cat==="etc"&&i.decided)]],tot=rows.reduce((a,r)=>a+r[1],0);
@@ -995,12 +1122,13 @@ const CATS={
   etc:{add:"맛집·기타 추가",title:["제목","예: 스프카레 맛집"],a:["분류","맛집, 준비물, 교통 등"],price:"1인 예상 비용(원)",place:true}
 };
 function renderCand(){
+  if(!loaded){$("cands").innerHTML=skCards(3);return}
   document.querySelectorAll("#candSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.c===candCat));
   $("abnbForm").hidden=candCat!=="stays";$("addCand").textContent="+ "+CATS[candCat].add.replace(" 추가","");
   const C=CATS[candCat],list=items.filter(i=>i.cat===candCat).sort((a,b)=>(b.decided?1:0)-(a.decided?1:0)||voters(b,1).length-voters(a,1).length||(a.at||0)-(b.at||0));
   $("stayMapBox").hidden=candCat!=="stays";
   $("cands").innerHTML=list.length?list.map(it=>{
-    let h='<article class="ccard'+(it.decided?" decided":"")+'" id="card-'+it.id+'">'+(it.photo&&isUrl(it.photo)?'<div class="ph" style="background-image:url(&quot;'+esc(it.photo)+'&quot;)"></div>':'');
+    let h='<article class="ccard'+(it.decided?" decided":"")+'" id="card-'+it.id+'">'+(it.photo&&isUrl(it.photo)?'<div class="ph"'+(lowQ(it.photo)?' style="--lq:url(&quot;'+esc(lowQ(it.photo))+'&quot;)"':'')+'><img src="'+esc(it.photo)+'" alt="" loading="lazy" decoding="async"'+(imgOk.has(it.photo)?' class="ok"':' onload="__imgOk(this)"')+' onerror="this.remove()"></div>':'');
     h+='<div class="bd"><div class="row" style="justify-content:space-between;align-items:flex-start"><h4>'+esc(it.title)+'</h4>'+(it.price?'<span class="price">'+won(it.price)+'</span>':'')+'</div>';
     let kv="";if(it.place)kv+='<dt>위치</dt><dd>'+esc(it.place)+'</dd>';if(it.a&&C.a)kv+='<dt>'+C.a[0]+'</dt><dd>'+esc(it.a)+'</dd>';if(it.b&&C.b)kv+='<dt>'+C.b[0]+'</dt><dd>'+esc(it.b)+'</dd>';
     if(kv)h+='<dl class="kv">'+kv+'</dl>';if(it.memo)h+='<p class="memo">'+yen(esc(it.memo))+'</p>';
@@ -1034,12 +1162,18 @@ function fxUpd(){const v=Number($("fxIn").value)||0;$("fxOut").textContent=won(y
 $("fxIn").addEventListener("input",fxUpd);
 $("fx").addEventListener("click",e=>{const b=e.target.closest("[data-fx]");if(b){$("fxIn").value=b.dataset.fx;fxUpd()}});
 function renderTodo(){fxUpd();
+  {const t=items.filter(i=>i.cat==="todo"),dn=t.filter(i=>i.done).length,pc=t.length?dn/t.length:0,C=2*Math.PI*24;
+   if(!$("ringFg")){$("todoRing").innerHTML='<div class="ring"><div class="rt"><svg viewBox="0 0 56 56"><circle class="bg" cx="28" cy="28" r="24"/><circle class="fg" id="ringFg" cx="28" cy="28" r="24" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+C.toFixed(1)+'"/></svg><span id="ringPc">0%</span></div><div><b id="ringT"></b><small id="ringS"></small></div></div>'}
+   $("todoRing").hidden=!t.length;requestAnimationFrame(()=>{$("ringFg").setAttribute("stroke-dashoffset",(C*(1-pc)).toFixed(1))});
+   $("ringPc").textContent=Math.round(pc*100)+"%";$("ringT").textContent=dn+" / "+t.length+" 챙김";$("ringS").textContent=pc===1?"다 챙겼어요. 출발 준비 끝!":"남은 준비물 "+(t.length-dn)+"개"}
   const t=items.filter(i=>i.cat==="todo").sort((a,b)=>(a.done?1:0)-(b.done?1:0)||(a.at||0)-(b.at||0));
   $("todoSug").innerHTML=TODO_SUG.filter(s=>!t.some(i=>i.title===s)).map(s=>'<button class="btn sm" type="button" data-sug="'+esc(s)+'">+ '+esc(s)+'</button>').join("");
   $("todos").innerHTML=t.length?t.map(i=>'<label class="todo'+(i.done?" done":"")+'"><input type="checkbox" data-todo="'+i.id+'"'+(i.done?" checked":"")+'><span>'+esc(i.title)+'</span><small>'+esc(i.done?(i.doneBy||"")+" 챙김":"")+'</small><button class="btn sm ghost danger" type="button" data-act="del" data-id="'+i.id+'">'+(armed===i.id?"정말 삭제":"삭제")+'</button></label>').join(""):'<div class="empty">위의 추천 항목을 눌러 추가해 보세요.</div>';
 }
 
+let animKey="";
 function render(){
+  {const k=location.hash+"|"+selDay+"|"+candCat+"|"+loaded;if(k!==animKey){animKey=k;document.body.classList.add("anim");clearTimeout(render.at);render.at=setTimeout(()=>document.body.classList.remove("anim"),1000)}}
   const act=document.activeElement,fid=act&&act.id&&act.id.indexOf("c-")===0?act.id:null,sel=fid?act.selectionStart:0;
   header();
   const v=view();
@@ -1084,7 +1218,9 @@ $("geoBtn").addEventListener("click",()=>{
     rs.forEach(r=>{const b=document.createElement("button");b.type="button";b.textContent=String(r.display_name).slice(0,90);b.addEventListener("click",()=>{setPos({lat:+r.lat,lng:+r.lon},16);box.innerHTML="";msg.textContent="위치를 정했습니다."});box.appendChild(b)});
   }).catch(()=>{msg.textContent="검색 서버에 연결하지 못했습니다. 지도를 눌러 주세요."});
 });
-$("cancelBtn").addEventListener("click",()=>$("dlg").close());
+function closeDlg(d){if(!d.open)return;d.classList.add("closing");setTimeout(()=>{d.classList.remove("closing");d.close()},230)}
+$("cancelBtn").addEventListener("click",()=>closeDlg($("dlg")));
+["dlg","whoDlg"].forEach(id=>$(id).addEventListener("click",e=>{if(e.target===$(id))closeDlg($(id))}));
 $("form").addEventListener("submit",e=>{
   e.preventDefault();if(!store)return;
   const c=formCat,C=CATS[c],title=$("fTitle").value.trim();
@@ -1096,10 +1232,10 @@ $("form").addEventListener("submit",e=>{
     day:c==="plan"?$("fDay").value:"",time:c==="plan"?$("fTime").value:"",stay:c==="plan"?(num("fStay")||60):0,meal:c==="plan"?$("fMeal").value:"",mode:c==="plan"?$("fMode").value:"",travel:c==="plan"?num("fTravel"):0,kr:c==="plan"&&$("fKr").value==="1"};
   d.who=d.kr?$("fWho").value:"";
   if(d.kr){d.lat=null;d.lng=null;d.mode="";d.travel=0}
-  const btn=$("saveBtn"),was=editing;btn.disabled=true;let p;
+  const btn=$("saveBtn"),was=editing;btn.disabled=true;btn.classList.add("loading");let p;
   if(was){d.editedBy=me;d.editedAt=Date.now();p=store.update("items",was.id,d)}
   else{d.by=me;d.at=Date.now();d.decided=false;d.votes={};p=store.add("items",d)}
-  p.then(()=>{$("dlg").close();if(c==="plan"&&d.day&&selDay!=="all")selDay=d.day;toast(was?"수정했습니다.":"추가했습니다.")},fail).then(()=>{btn.disabled=false});
+  p.then(()=>{closeDlg($("dlg"));if(c==="plan"&&d.day&&selDay!=="all")selDay=d.day;toast(was?"수정했습니다.":"추가했습니다.")},fail).then(()=>{btn.disabled=false;btn.classList.remove("loading")});
 });
 
 /* ---------- name picker ---------- */
@@ -1108,9 +1244,9 @@ document.addEventListener("focusout",e=>{if(/^(INPUT|TEXTAREA|SELECT)$/.test(e.t
 $("fKr").addEventListener("change",()=>{$("wWho").hidden=$("fKr").value!=="1";if($("fKr").value==="1"&&!$("fWho").value&&me)$("fWho").value=me});
 function askWho(){$("whoGrid").innerHTML=MEMBERS.map(n=>'<button type="button" class="who-btn" data-who="'+n+'" aria-pressed="'+(me===n)+'"><span class="av" style="background:'+MCOL[n]+'">'+initial(n)+'</span>'+n+'</button>').join("");if(!$("whoDlg").open)$("whoDlg").showModal()}
 $("meBtn").addEventListener("click",askWho);
-$("whoLater").addEventListener("click",()=>$("whoDlg").close());
+$("whoLater").addEventListener("click",()=>closeDlg($("whoDlg")));
 $("whoForm").addEventListener("submit",e=>e.preventDefault());
-$("whoGrid").addEventListener("click",e=>{const b=e.target.closest("[data-who]");if(!b)return;me=b.dataset.who;try{localStorage.setItem("trip-nick",me)}catch(x){}$("whoDlg").close();toast(me+" 님으로 표시됩니다.");render()});
+$("whoGrid").addEventListener("click",e=>{const b=e.target.closest("[data-who]");if(!b)return;me=b.dataset.who;try{localStorage.setItem("trip-nick",me)}catch(x){}closeDlg($("whoDlg"));toast(me+" 님으로 표시됩니다.");render()});
 
 /* ---------- auto time ---------- */
 async function autoTime(k){
@@ -1131,7 +1267,8 @@ $("abnbForm").addEventListener("submit",e=>{
   const m=v.match(/airbnb\.[^/]+\/rooms\/(?:plus\/)?(\d+)/i);
   if(!m){toast("에어비앤비 숙소 링크(…/rooms/숫자)를 붙여 넣어 주세요.");return}
   if(items.some(i=>i.cat==="stays"&&String(i.link||"").indexOf("/rooms/"+m[1])>=0)){toast("이미 추가된 숙소입니다.");return}
-  addStays([{title:"에어비앤비 숙소 "+m[1],link:"https://www.airbnb.co.kr/rooms/"+m[1],memo:"가격, 위치, 사진은 수정에서 채워 주세요."}]).then(()=>{$("abnbIn").value="";toast("숙소 후보를 추가했습니다. 수정에서 가격과 위치를 넣어 주세요.")},fail);
+  const sb=e.target.querySelector("[type=submit]");sb.classList.add("loading");
+  addStays([{title:"에어비앤비 숙소 "+m[1],link:"https://www.airbnb.co.kr/rooms/"+m[1],memo:"가격, 위치, 사진은 수정에서 채워 주세요."}]).then(()=>{$("abnbIn").value="";toast("숙소 후보를 추가했습니다. 수정에서 가격과 위치를 넣어 주세요.")},fail).then(()=>sb.classList.remove("loading"));
 });
 
 /* ---------- KML ---------- */
@@ -1172,14 +1309,21 @@ async function buildPages(){
   await Promise.all(waits);await new Promise(r=>setTimeout(r,400));
   return {pages:[$("xp1"),$("xp2")],cleanup:()=>{maps.forEach(m=>m.remove());root.innerHTML=""}};
 }
+function setProg(step,pct,title){
+  const P=$("prog");P.hidden=false;if(title)$("progT").textContent=title;
+  [...$("progSteps").children].forEach((li,i)=>{li.className=i<step?"done":(i===step?"on":"")});
+  $("progBar").style.width=Math.round(pct)+"%";$("progP").textContent=Math.round(pct)+"% · "+["라이브러리와 지도 준비","페이지 그리는 중","파일 저장"][Math.min(step,2)];
+}
 async function exportAs(kind){
-  const btn=$(kind==="pdf"?"pdfBtn":"pngBtn"),label=btn.textContent;btn.disabled=true;btn.textContent="만드는 중…";
+  const btn=$(kind==="pdf"?"pdfBtn":"pngBtn");btn.disabled=true;btn.classList.add("loading");
   let built=null;
   try{
-    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");
-    if(kind==="pdf")await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
-    built=await buildPages();
-    const canv=[];for(const p of built.pages)canv.push(await html2canvas(p,{scale:2,useCORS:true,backgroundColor:"#ffffff",logging:false}));
+    setProg(0,5,kind==="pdf"?"PDF 만드는 중":"이미지 만드는 중");
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");setProg(0,15);
+    if(kind==="pdf")await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");setProg(0,22);
+    built=await buildPages();setProg(1,35);
+    const canv=[];for(let i=0;i<built.pages.length;i++){canv.push(await html2canvas(built.pages[i],{scale:2,useCORS:true,backgroundColor:"#ffffff",logging:false}));setProg(1,35+50*(i+1)/built.pages.length)}
+    setProg(2,90);
     if(kind==="pdf"){
       const pdf=new window.jspdf.jsPDF({orientation:"landscape",unit:"mm",format:"a4"});
       canv.forEach((c,i)=>{if(i)pdf.addPage("a4","landscape");pdf.addImage(c.toDataURL("image/jpeg",.92),"JPEG",0,0,297,210)});
@@ -1188,9 +1332,10 @@ async function exportAs(kind){
       const W=canv[0].width,H=canv.reduce((a,c)=>a+c.height,0),out=document.createElement("canvas");out.width=W;out.height=H;const g=out.getContext("2d");let y=0;canv.forEach(c=>{g.drawImage(c,0,y);y+=c.height});
       const blob=await new Promise(r=>out.toBlob(r,"image/png"));await saveBlob(blob,"셋포로_일정표.png");
     }
-    toast("저장했습니다.");
+    setProg(3,100,"완료");toast("저장했습니다.");
   }catch(e){console.error(e);toast("만들지 못했습니다. 잠시 후 다시 시도해 주세요.")}
-  if(built)built.cleanup();btn.disabled=false;btn.textContent=label;
+  setTimeout(()=>{$("prog").hidden=true},900);
+  if(built)built.cleanup();btn.disabled=false;btn.classList.remove("loading");
 }
 $("pdfBtn").addEventListener("click",()=>exportAs("pdf"));
 $("pngBtn").addEventListener("click",()=>exportAs("png"));
@@ -1228,7 +1373,7 @@ document.addEventListener("click",e=>{
   const id=b.dataset.id,act=b.dataset.act,it=items.find(i=>i.id===id);
   if(act==="cdel"){store.del("comments",id).catch(fail);return}
   if(!it)return;
-  if(act==="up"||act==="down"){if(!me){askWho();return}const v=act==="up"?1:-1,votes=Object.assign({},it.votes||{});if(votes[me]===v)delete votes[me];else votes[me]=v;store.update("items",id,{votes}).catch(fail)}
+  if(act==="up"||act==="down"){if(!me){askWho();return}const v=act==="up"?1:-1,votes=Object.assign({},it.votes||{});if(votes[me]===v)delete votes[me];else votes[me]=v;popKey=votes[me]?id+act:"";clearTimeout(actsHtml.t);actsHtml.t=setTimeout(()=>{popKey=""},450);store.update("items",id,{votes}).catch(fail)}
   else if(act==="decide"){const on=!it.decided;store.update("items",id,{decided:on}).catch(fail)}
   else if(act==="edit")openForm(it,null);
   else if(act==="toplan")openForm(it,"plan");

@@ -1,5 +1,5 @@
 /* 셋포로 오프라인 지원: 앱 화면과 라이브러리를 기기에 저장해 두고, 인터넷이 없을 때 꺼내 씁니다. */
-const V = "setporo-v1";
+const V = "setporo-v2";
 const CORE = ["./", "./index.html", "./manifest.json", "./apple-touch-icon.png", "./icon-192.png", "./icon-512.png"];
 const STATIC_HOSTS = ["unpkg.com", "cdnjs.cloudflare.com", "cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com", "server.arcgisonline.com"];
 const FRESH_HOSTS = ["api.open-meteo.com", "open.er-api.com"];
