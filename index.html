@@ -1162,6 +1162,7 @@ function begin(s,isShared){
   s.watch("items",(d,meta)=>{items=d;loaded=true;
     if(!(meta&&meta.fromCache)&&!items.some(i=>i.cat==="cfg"&&i.key==="seeded")&&!items.some(i=>i.cat!=="cfg"))seedDefaults(false);
     else if(!(meta&&meta.fromCache)&&!seeding&&items.some(i=>i.cat==="cfg"&&i.key==="seeded")&&!items.some(i=>i.cat==="cfg"&&i.key==="seeded-kr"))seedKr(false);
+    if(!(meta&&meta.fromCache))[["seedkr-07","공항철도·리무진으로 이동"],["seedkr-08","마무리 저녁·해산"]].forEach(([id,t])=>{const x=items.find(i=>i.id===id);if(x&&x.src==="preset"&&x.title===t&&!x.who)store.del("items",id).catch(()=>{})});
     render()},()=>{connErr=true;loaded=true;render()});
   s.watch("comments",d=>{comments=d;render()},()=>{});
 }
