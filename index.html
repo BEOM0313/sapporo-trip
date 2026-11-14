@@ -446,6 +446,9 @@ html{touch-action:manipulation}
 }
 .fab.hide{transform:translateY(calc(100% + 40px))!important}
 .endadd{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:22px 0 8px}
+.mkfocus{z-index:9999!important}
+.mkfocus>*{animation:mkpulse .9s var(--ease-out) 2;border-radius:50%}
+@keyframes mkpulse{0%{box-shadow:0 0 0 0 rgba(74,149,224,.7);transform:scale(1)}40%{transform:scale(1.25)}100%{box-shadow:0 0 0 18px rgba(74,149,224,0);transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
 
 /* ===== motion & app feel ===== */
@@ -1126,12 +1129,20 @@ function drawRoutes(lg_layer,days,opts){
     P.stops.forEach((s,i)=>{const p=pos(s);if(!p)return;pts.push(Object.assign({day:D.k},p));
       const mk=L.marker(p,{icon:stopIcon(D.c,i+1,s.meal,opts.size),zIndexOffset:100+i});
       if(!opts.static)mk.bindPopup('<b>'+D.n+'일차 '+(i+1)+'. '+esc(s.title)+'</b><br>'+(s.time?esc(s.time)+' · ':'')+dur(stayOf(s))+(s.meal?' · '+MEAL[s.meal].l:'')+(mapUrl(s)?'<div class="pop-opts"><a href="'+esc(mapUrl(s))+'" target="_blank" rel="noopener noreferrer">구글 지도에서 보기</a></div>':''));
+      if(!opts.static)stopMarks[s.id]=mk;
       mk.addTo(lg_layer)});
   });
   return pts;
 }
 let map=null,layer=null,fitKey="";
-let mapSig="";
+let mapSig="",stopMarks={};
+function focusStop(id){
+  const mk=stopMarks[id];if(!mk||!map)return;
+  const pane=$("mapPane");if(!pane||pane.offsetWidth<1||pane.offsetHeight<1)return;
+  const ll=mk.getLatLng();
+  map.flyTo(ll,Math.max(map.getZoom(),15),{duration:.7,easeLinearity:.2});
+  setTimeout(()=>{mk.openPopup();const el=mk.getElement();if(el){el.classList.remove("mkfocus");void el.offsetWidth;el.classList.add("mkfocus");setTimeout(()=>el.classList.remove("mkfocus"),2000)}},720);
+}
 function drawMap(){
   if(!window.L)return;
   {const sig=JSON.stringify([selDay,showZones,showRec,$("plan").dataset.mode,Object.values(routes).filter(Boolean).length,items.filter(x=>x.cat==="plan"||x.cat==="stays").map(x=>[x.id,x.lat,x.lng,x.day,x.time,x.mode,x.decided,x.price,x.title,x.kr,x.stay,x.travel])]);
@@ -1141,7 +1152,7 @@ function drawMap(){
     L.control.zoom({position:"bottomright"}).addTo(map);
     baseLayer(map,false);layer=L.layerGroup().addTo(map);
   }
-  layer.clearLayers();
+  layer.clearLayers();stopMarks={};
   if(showZones)ZONES.forEach(z=>L.rectangle(z.b,{color:z.c,weight:2,fillColor:z.c,fillOpacity:.1,dashArray:"6 6"}).bindTooltip(z.rank+" · "+z.name,{permanent:true,direction:"center",className:"zlabel"}).bindPopup('<b>'+esc(z.rank+" · "+z.name)+'</b><br>좋은 점: '+esc(z.good)+'<br>아쉬운 점: '+esc(z.bad)).addTo(layer));
   if(showZones)items.filter(x=>x.cat==="stays"&&!x.decided&&pos(x)).forEach(x=>{
     const t=x.price?"₩"+Math.round(x.price/1000)+"천":"후보";
@@ -1528,7 +1539,7 @@ document.addEventListener("click",e=>{
   const sc=e.target.closest("[data-showcard]");
   if(sc){e.preventDefault();const el=$("card-"+sc.dataset.showcard);if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),1600)}return}
   const op=e.target.closest("[data-open]");
-  if(op){openCard=openCard===op.dataset.open?null:op.dataset.open;justOpened=openCard;render();setTimeout(()=>{justOpened=null},400);return}
+  if(op){const fid=op.dataset.open;openCard=openCard===fid?null:fid;justOpened=openCard;render();setTimeout(()=>{justOpened=null},400);if(op.closest(".stop"))setTimeout(()=>focusStop(fid),30);return}
   const rc=e.target.closest("[data-rec]");
   if(rc){e.preventDefault();const r=RECS[+rc.dataset.rec];if(map)map.closePopup();openForm({title:r.t,place:r.t,lat:r.lat,lng:r.lng,stay:r.stay,time:r.at,meal:r.meal||"",memo:r.tip},"plan");return}
   const zb=e.target.closest("[data-zone]");
