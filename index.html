@@ -449,6 +449,48 @@ html{touch-action:manipulation}
 .mkfocus{z-index:9999!important}
 .mkfocus>*{animation:mkpulse .9s var(--ease-out) 2;border-radius:50%}
 @keyframes mkpulse{0%{box-shadow:0 0 0 0 rgba(74,149,224,.7);transform:scale(1)}40%{transform:scale(1.25)}100%{box-shadow:0 0 0 18px rgba(74,149,224,0);transform:scale(1)}}
+
+/* ===== budget ===== */
+.bsum{background:linear-gradient(150deg,var(--deep),#0B5689);color:#fff;border-radius:24px;padding:16px;margin:0 0 14px;box-shadow:0 10px 30px rgba(7,27,51,.22)}
+.btot small{font-size:12px;font-weight:700;opacity:.8}
+.btot b{display:block;font-size:32px;font-weight:900;letter-spacing:-.02em;line-height:1.15;margin:2px 0}
+.btot span{display:block;font-size:12.5px;opacity:.85}
+.bbar{display:flex;height:10px;border-radius:9px;overflow:hidden;background:rgba(255,255,255,.15);margin:14px 0 8px}
+.bbar i{display:block;height:100%;transition:width .5s var(--ease-out)}
+.blegend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;opacity:.92}
+.blegend span{display:inline-flex;align-items:center;gap:5px}.blegend i{width:8px;height:8px;border-radius:3px}
+.bpeople{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.bpeople div{background:rgba(255,255,255,.12);border-radius:14px;padding:8px;border-top:3px solid var(--pc)}
+.bpeople small{display:block;font-size:11px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bpeople b{font-size:13px;font-weight:800}
+.bform{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:16px;margin:0 0 16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+.bhead{display:flex;align-items:center;gap:8px}.bhead b{font-size:16px}.bhead .spacer{flex:1}
+.bamt{display:flex;align-items:center;gap:10px}
+.bamt input{flex:1;min-width:0;border:0;border-bottom:2px solid var(--line);background:transparent;font-size:34px;font-weight:900;padding:4px 2px;color:var(--ink);font-variant-numeric:tabular-nums;border-radius:0}
+.bamt input:focus{outline:none;border-bottom-color:var(--accent)}
+.bconv{color:var(--muted);font-size:12.5px;font-weight:700;margin-top:-6px}
+.bfield{display:flex;flex-direction:column;gap:6px}.bfield>span{font-size:12.5px;color:var(--muted);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.bchip{border:1.5px solid var(--line);background:var(--field);border-radius:999px;padding:7px 13px;font-weight:700;font-size:13.5px;cursor:pointer;min-height:38px;color:var(--ink);transition:transform .12s var(--ease-out),background .18s,border-color .18s,color .18s}
+.bchip:active{transform:scale(.95)}
+.bchip[aria-pressed="true"]{background:var(--cc,var(--accent));border-color:var(--cc,var(--accent));color:#fff}
+.bchip small{font-size:11px;opacity:.75;font-weight:600}
+.bchip.add{border-style:dashed;background:transparent;color:var(--muted)}
+.cardchip{display:inline-flex;align-items:center}
+.cardchip .bchip{border-top-right-radius:0;border-bottom-right-radius:0}
+.cx{border:1.5px solid var(--line);border-left:0;background:var(--field);border-radius:0 999px 999px 0;min-height:38px;padding:0 10px;color:var(--muted);font-weight:800;cursor:pointer}
+.bcardadd{display:flex;gap:6px;flex-wrap:wrap}
+.bcardadd input,.bcardadd select{flex:1;min-width:120px;border:1px solid var(--line);background:var(--field);border-radius:12px;padding:8px 10px;min-height:40px;color:var(--ink)}
+.bsave{min-height:50px;font-size:16px}
+.bday{margin:0 0 14px}
+.bdayh{display:flex;justify-content:space-between;align-items:baseline;padding:0 4px 6px;font-size:13.5px}.bdayh span{color:var(--muted);font-weight:800}
+.brow{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:transform .12s var(--ease-out)}
+.brow:active{transform:scale(.985)}
+.brow.editing{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 25%,transparent)}
+.bic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;color:#fff;font-weight:900;font-size:14px;flex:none}
+.bmain{flex:1;min-width:0}.bmain b{display:block;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bmain small{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bamt2{text-align:right}.bamt2 b{display:block;font-size:15px}.bamt2 small{color:var(--muted);font-size:11.5px}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
 
 /* ===== motion & app feel ===== */
@@ -666,14 +708,24 @@ dialog::backdrop{transition:opacity .3s}
     <div class="grid" id="cands"></div>
   </section>
 
-  <section class="view" id="v-todo" aria-label="준비물">
+  <section class="view" id="v-todo" aria-label="예산">
+    <h2>예산</h2>
+    <div id="bSum"></div>
+    <div class="bform" id="bForm">
+      <div class="bhead"><b id="bTitle">쓴 돈 기록</b><span class="spacer"></span><button class="btn sm ghost" type="button" id="bCancel" hidden>취소</button></div>
+      <div class="bamt"><input id="bAmt" inputmode="numeric" autocomplete="off" placeholder="0" aria-label="사용 금액"><div class="seg" id="bCur"><button type="button" data-cur="JPY" aria-pressed="true">엔</button><button type="button" data-cur="KRW" aria-pressed="false">원</button></div></div>
+      <small class="bconv" id="bConv">&nbsp;</small>
+      <label class="f" for="bWhere">사용처<input id="bWhere" maxlength="60" autocomplete="off" placeholder="예: 이치란 라멘, 돈키호테, 지하철" list="bWhereList"><datalist id="bWhereList"></datalist></label>
+      <div class="bfield"><span>분류</span><div class="chips" id="bCat"></div></div>
+      <div class="bfield"><span>누가 냈나요</span><div class="chips" id="bPayer"></div></div>
+      <div class="bfield"><span>결제 수단</span><div class="chips" id="bMethod"></div></div>
+      <div class="bcardadd" id="bCardAdd" hidden><input id="bCardName" maxlength="30" autocomplete="off" placeholder="카드 이름 (예: 트래블월렛, 신한 체크)"><select id="bCardOwner"></select><button class="btn sm primary" type="button" id="bCardSave">등록</button></div>
+      <div class="two"><label class="f" for="bDay">날짜<select id="bDay"></select></label><label class="f" for="bMemo">기타 메모<input id="bMemo" maxlength="120" autocomplete="off" placeholder="선택"></label></div>
+      <button class="btn primary bsave" type="button" id="bSave">기록하기</button>
+    </div>
+    <div id="bList"></div>
     <h2>엔화 계산기</h2>
     <div class="fx" id="fx"><input id="fxIn" type="number" inputmode="numeric" min="0" placeholder="엔" aria-label="엔화 금액"><span>엔 =</span><b id="fxOut">₩0</b><div class="q"><button type="button" class="btn sm" data-fx="500">500엔</button><button type="button" class="btn sm" data-fx="1000">1,000엔</button><button type="button" class="btn sm" data-fx="1990">1,990엔</button><button type="button" class="btn sm" data-fx="10000">1만엔</button></div><small id="fxNote"></small></div>
-    <h2>준비물</h2>
-    <form class="cform" id="todoForm"><input id="todoIn" maxlength="60" autocomplete="off" placeholder="준비물 추가"><button class="btn primary" type="submit">추가</button></form>
-    <div class="row" id="todoSug" style="margin:12px 0"></div>
-    <div id="todoRing"></div>
-    <div class="stack" id="todos"></div>
   </section>
 </main>
 
@@ -745,7 +797,7 @@ const ICON={
   week:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>',
   rec:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg>',
   cand:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
-  todo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+  todo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h13a1 1 0 0 1 1 1v2"/><path d="M3 7v11a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M20 8H15a3 3 0 0 0 0 6h5a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1z"/><circle cx="15.5" cy="11" r=".6" fill="currentColor"/></svg>',
   fork:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 3v8a2 2 0 0 0 2 2v8M11 3v8a2 2 0 0 1-2 2M9 3v6M17 21V3c-2 1-3 4-3 8h3"/></svg>',
   walk:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m10 21 2-6 3 3v3M8 12l2-4 4 1 2 3 3 1M10 8l-1 5"/></svg>',
   transit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 11h14M8 21l2-4M16 21l-2-4"/><circle cx="9" cy="14" r=".5"/><circle cx="15" cy="14" r=".5"/></svg>',
@@ -753,7 +805,7 @@ const ICON={
   plane:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16l20-6-3-2-6 2-6-6-2 1 4 6-5 2-2-1-1 1z"/></svg>',
   car:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M6 17v2M18 17v2M4 13l2-6h12l2 6v4H4z"/><path d="M9 4h6"/></svg>'
 };
-const TABS=[["plan","일정"],["week","한눈에"],["rec","추천"],["cand","후보"],["todo","준비물"]];
+const TABS=[["plan","일정"],["week","한눈에"],["rec","추천"],["cand","후보"],["todo","예산"]];
 
 /* ---------- state ---------- */
 let store=null,shared=false,connErr=false,loaded=false,seeding=false;
@@ -1321,15 +1373,80 @@ function drawStayMap(){
 function fxUpd(){const v=Number($("fxIn").value)||0;$("fxOut").textContent=won(yen2won(v));$("fxNote").textContent="100엔 ≈ "+Math.round(JPY*100).toLocaleString("ko-KR")+"원"+(JPYAt?" ("+JPYAt+" 기준 실시간 환율)":" (대략, 인터넷 연결 시 실시간 환율로 바뀜)")+" · 일정 메모의 엔화 금액 옆에도 원화가 자동으로 붙어요. 실제 환전·카드 결제 금액과는 조금 달라요."}
 $("fxIn").addEventListener("input",fxUpd);
 $("fx").addEventListener("click",e=>{const b=e.target.closest("[data-fx]");if(b){$("fxIn").value=b.dataset.fx;fxUpd()}});
-function renderTodo(){fxUpd();
-  {const t=items.filter(i=>i.cat==="todo"),dn=t.filter(i=>i.done).length,pc=t.length?dn/t.length:0,C=2*Math.PI*24;
-   if(!$("ringFg")){$("todoRing").innerHTML='<div class="ring"><div class="rt"><svg viewBox="0 0 56 56"><circle class="bg" cx="28" cy="28" r="24"/><circle class="fg" id="ringFg" cx="28" cy="28" r="24" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+C.toFixed(1)+'"/></svg><span id="ringPc">0%</span></div><div><b id="ringT"></b><small id="ringS"></small></div></div>'}
-   $("todoRing").hidden=!t.length;requestAnimationFrame(()=>{$("ringFg").setAttribute("stroke-dashoffset",(C*(1-pc)).toFixed(1))});
-   $("ringPc").textContent=Math.round(pc*100)+"%";$("ringT").textContent=dn+" / "+t.length+" 챙김";$("ringS").textContent=pc===1?"다 챙겼어요. 출발 준비 끝!":"남은 준비물 "+(t.length-dn)+"개"}
-  const t=items.filter(i=>i.cat==="todo").sort((a,b)=>(a.done?1:0)-(b.done?1:0)||(a.at||0)-(b.at||0));
-  $("todoSug").innerHTML=TODO_SUG.filter(s=>!t.some(i=>i.title===s)).map(s=>'<button class="btn sm" type="button" data-sug="'+esc(s)+'">+ '+esc(s)+'</button>').join("");
-  $("todos").innerHTML=t.length?t.map(i=>'<label class="todo'+(i.done?" done":"")+'"><input type="checkbox" data-todo="'+i.id+'"'+(i.done?" checked":"")+'><span>'+esc(i.title)+'</span><small>'+esc(i.done?(i.doneBy||"")+" 챙김":"")+'</small><button class="btn sm ghost danger" type="button" data-act="del" data-id="'+i.id+'">'+(armed===i.id?"정말 삭제":"삭제")+'</button></label>').join(""):'<div class="empty">위의 추천 항목을 눌러 추가해 보세요.</div>';
+const BCATS=[["food","식비","#D9542B"],["cafe","카페·간식","#7B5E48"],["trans","교통","#0B5689"],["stay","숙박","#6E56B8"],["tour","관광·입장","#13867F"],["shop","쇼핑","#C4513A"],["etc","기타","#5B6B82"]];
+const BDAYS=[["pre","출발 전"]].concat(DAYS.map(d=>[d.k,d.l+" ("+d.w+")"]));
+let bEdit=null,bArm=null;
+const bPref=(()=>{try{return JSON.parse(localStorage.getItem("trip-bpref")||"{}")}catch(e){return {}}})();
+const bD={cur:bPref.cur||"JPY",cat:"food",payer:bPref.payer||"공금",method:bPref.method||"cash"};
+function bToday(){const {md}=nowInfo();return DAYS.some(d=>d.k===md)?md:(md<"12-13"&&md>"06-00"?"pre":"12-17")}
+function spendKRW(x){return x.cur==="KRW"?Number(x.amt)||0:(Number(x.krw)||yen2won(Number(x.amt)||0))}
+function cardName(id){if(id==="cash")return "현금";const c=items.find(i=>i.id===id);return c?c.title+(c.owner?" · "+c.owner:""):"카드"}
+function bConvUpd(){const v=Number(String($("bAmt").value).replace(/[^0-9]/g,""))||0;$("bConv").innerHTML=v?(bD.cur==="JPY"?"≈ "+won(yen2won(v))+" · 100엔 ≈ "+Math.round(JPY*100)+"원":"≈ "+Math.round(v/JPY).toLocaleString("ko-KR")+"엔"):"&nbsp;"}
+function bChips(){
+  document.querySelectorAll("#bCur button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.cur===bD.cur));
+  $("bCat").innerHTML=BCATS.map(c=>'<button type="button" class="bchip" data-bcat="'+c[0]+'" aria-pressed="'+(bD.cat===c[0])+'" style="--cc:'+c[2]+'">'+c[1]+'</button>').join("");
+  $("bPayer").innerHTML=["공금"].concat(MEMBERS).map(n=>'<button type="button" class="bchip" data-bpay="'+n+'" aria-pressed="'+(bD.payer===n)+'" style="--cc:'+(MCOL[n]||"#0B5689")+'">'+(n==="공금"?"공금":esc(n))+'</button>').join("");
+  const cards=items.filter(i=>i.cat==="card").sort((a,b)=>(a.at||0)-(b.at||0));
+  if(bD.method!=="cash"&&!cards.some(c=>c.id===bD.method))bD.method="cash";
+  $("bMethod").innerHTML='<button type="button" class="bchip" data-bmeth="cash" aria-pressed="'+(bD.method==="cash")+'">현금</button>'+cards.map(c=>'<span class="cardchip"><button type="button" class="bchip" data-bmeth="'+c.id+'" aria-pressed="'+(bD.method===c.id)+'">💳 '+esc(c.title)+(c.owner?' <small>'+esc(c.owner)+'</small>':'')+'</button><button type="button" class="cx" data-bcarddel="'+c.id+'" aria-label="'+esc(c.title)+' 카드 삭제">'+(bArm==="card"+c.id?"삭제?":"×")+'</button></span>').join("")+'<button type="button" class="bchip add" data-bcardnew>+ 카드 등록</button>';
 }
+function renderBudget(){
+  fxUpd();
+  if(!loaded){$("bList").innerHTML=skCards(1);return}
+  if(!$("bDay").options.length){$("bDay").innerHTML=BDAYS.map(d=>'<option value="'+d[0]+'">'+d[1]+'</option>').join("");$("bDay").value=bToday();
+    $("bCardOwner").innerHTML=['<option value="">공용</option>'].concat(MEMBERS.map(n=>'<option'+(n===me?" selected":"")+'>'+n+'</option>')).join("")}
+  $("bWhereList").innerHTML=[...new Set(items.filter(i=>i.cat==="plan"&&!i.kr&&(i.day===$("bDay").value)).map(i=>i.title))].map(t=>'<option value="'+esc(t)+'">').join("");
+  bChips();bConvUpd();
+  const sp=items.filter(i=>i.cat==="spend");
+  const tot=sp.reduce((a,x)=>a+spendKRW(x),0),yenTot=sp.filter(x=>x.cur==="JPY").reduce((a,x)=>a+(Number(x.amt)||0),0);
+  const byP={};["공금"].concat(MEMBERS).forEach(n=>byP[n]=0);sp.forEach(x=>{byP[x.payer||"공금"]=(byP[x.payer||"공금"]||0)+spendKRW(x)});
+  const byC=BCATS.map(c=>[c,sp.filter(x=>(x.bcat||"etc")===c[0]).reduce((a,x)=>a+spendKRW(x),0)]).filter(x=>x[1]>0);
+  const today=bToday(),tToday=sp.filter(x=>x.day===today).reduce((a,x)=>a+spendKRW(x),0);
+  let h='<div class="bsum"><div class="btot"><small>지금까지 쓴 돈</small><b class="num">'+won(tot)+'</b><span>'+(yenTot?'엔화 '+yenTot.toLocaleString("ko-KR")+'엔 포함 · ':'')+'1인 평균 '+won(Math.round(tot/3/10)*10)+'</span><span>'+(BDAYS.find(d=>d[0]===today)||["",""])[1]+' 사용 '+won(tToday)+'</span></div>';
+  if(byC.length)h+='<div class="bbar">'+byC.map(([c,v])=>'<i style="width:'+(v/tot*100).toFixed(1)+'%;background:'+c[2]+'"></i>').join("")+'</div><div class="blegend">'+byC.map(([c,v])=>'<span><i style="background:'+c[2]+'"></i>'+c[1]+' '+won(v)+'</span>').join("")+'</div>';
+  h+='<div class="bpeople">'+["공금"].concat(MEMBERS).map(n=>'<div style="--pc:'+(MCOL[n]||"#0B5689")+'"><small>'+(n==="공금"?"공금":esc(n))+'</small><b class="num">'+won(byP[n]||0)+'</b></div>').join("")+'</div></div>';
+  $("bSum").innerHTML=h;
+  if(!sp.length){$("bList").innerHTML='<div class="empty2"><div class="ico">🧾</div><b>아직 기록이 없어요</b>위에서 금액과 사용처를 넣고 기록하기를 누르세요.</div>';return}
+  const groups=BDAYS.map(d=>[d,sp.filter(x=>(x.day||"pre")===d[0]).sort((a,b)=>(b.at||0)-(a.at||0))]).filter(g=>g[1].length).reverse();
+  $("bList").innerHTML=groups.map(([d,arr])=>'<div class="bday"><div class="bdayh"><b>'+d[1]+'</b><span class="num">'+won(arr.reduce((a,x)=>a+spendKRW(x),0))+'</span></div>'+arr.map(x=>{const c=BCATS.find(c=>c[0]===x.bcat)||BCATS[6];
+    return '<div class="brow'+(bEdit===x.id?" editing":"")+'" data-bedit="'+x.id+'"><span class="bic" style="background:'+c[2]+'">'+c[1].slice(0,1)+'</span><div class="bmain"><b>'+esc(x.title||c[1])+'</b><small>'+c[1]+' · '+(x.payer==="공금"||!x.payer?"공금":esc(x.payer))+' · '+esc(cardName(x.method||"cash"))+(x.memo?' · '+esc(x.memo):'')+'</small></div><div class="bamt2"><b class="num">'+(x.cur==="JPY"?(Number(x.amt)||0).toLocaleString("ko-KR")+'엔':won(x.amt))+'</b>'+(x.cur==="JPY"?'<small class="num">≈'+won(spendKRW(x))+'</small>':'')+'</div></div>'}).join("")+'</div>').join("");
+}
+function bReset(){bEdit=null;$("bAmt").value="";$("bWhere").value="";$("bMemo").value="";$("bTitle").textContent="쓴 돈 기록";$("bSave").textContent="기록하기";$("bCancel").hidden=true;$("bSave").classList.remove("danger");bConvUpd()}
+$("bAmt").addEventListener("input",()=>{const raw=String($("bAmt").value).replace(/[^0-9]/g,"");$("bAmt").value=raw?Number(raw).toLocaleString("ko-KR"):"";bConvUpd()});
+$("bDay").addEventListener("change",()=>render());
+$("bCancel").addEventListener("click",()=>{bReset();render()});
+$("bForm").addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.cur){bD.cur=t.dataset.cur;bChips();bConvUpd();return}
+  if(t.dataset.bcat){bD.cat=t.dataset.bcat;bChips();return}
+  if(t.dataset.bpay){bD.payer=t.dataset.bpay;bChips();return}
+  if(t.dataset.bmeth){bD.method=t.dataset.bmeth;bChips();return}
+  if(t.hasAttribute("data-bcardnew")){$("bCardAdd").hidden=!$("bCardAdd").hidden;if(!$("bCardAdd").hidden)$("bCardName").focus();return}
+  if(t.dataset.bcarddel){const id=t.dataset.bcarddel;if(bArm!=="card"+id){bArm="card"+id;bChips();setTimeout(()=>{if(bArm==="card"+id){bArm=null;bChips()}},2500);return}bArm=null;store.del("items",id).catch(fail);return}
+});
+$("bCardSave").addEventListener("click",()=>{const n=$("bCardName").value.trim();if(!n){$("bCardName").focus();return}if(!store)return;
+  store.add("items",{cat:"card",title:n.slice(0,30),owner:$("bCardOwner").value,by:me,at:Date.now()}).then(()=>{$("bCardName").value="";$("bCardAdd").hidden=true;toast("카드를 등록했어요.")},fail)});
+$("bSave").addEventListener("click",()=>{
+  if(!store)return;const amt=Number(String($("bAmt").value).replace(/[^0-9]/g,""))||0;
+  if(!amt){$("bAmt").focus();toast("금액을 입력해 주세요.");return}
+  const c=BCATS.find(c=>c[0]===bD.cat);
+  const d={cat:"spend",title:$("bWhere").value.trim()||c[1],amt,cur:bD.cur,krw:bD.cur==="JPY"?yen2won(amt):amt,rate:JPY,bcat:bD.cat,payer:bD.payer,method:bD.method,day:$("bDay").value,memo:$("bMemo").value.trim()};
+  try{localStorage.setItem("trip-bpref",JSON.stringify({cur:bD.cur,payer:bD.payer,method:bD.method}))}catch(e){}
+  const btn=$("bSave");btn.classList.add("loading");
+  const p=bEdit?store.update("items",bEdit,Object.assign(d,{editedBy:me,editedAt:Date.now()})):store.add("items",Object.assign(d,{by:me,at:Date.now()}));
+  const was=bEdit;p.then(()=>{toast(was?"수정했어요.":"기록했어요. "+(d.cur==="JPY"?amt.toLocaleString("ko-KR")+"엔":won(amt)));bReset()},fail).then(()=>btn.classList.remove("loading"));
+});
+$("bList").addEventListener("click",e=>{
+  const del=e.target.closest("[data-bdel]");
+  if(del){const id=del.dataset.bdel;if(bArm!==id){bArm=id;del.textContent="정말 삭제";setTimeout(()=>{if(bArm===id){bArm=null;render()}},2500);return}bArm=null;store.del("items",id).then(()=>{bReset();toast("삭제했어요.")},fail);return}
+  const r=e.target.closest("[data-bedit]");if(!r)return;
+  const x=items.find(i=>i.id===r.dataset.bedit);if(!x)return;
+  bEdit=x.id;bD.cur=x.cur||"JPY";bD.cat=x.bcat||"etc";bD.payer=x.payer||"공금";bD.method=x.method||"cash";
+  $("bAmt").value=(Number(x.amt)||0).toLocaleString("ko-KR");$("bWhere").value=x.title||"";$("bMemo").value=x.memo||"";$("bDay").value=x.day||"pre";
+  $("bTitle").textContent="기록 수정";$("bSave").textContent="수정 저장";$("bCancel").hidden=false;
+  render();$("bForm").scrollIntoView({behavior:"smooth",block:"start"});
+  setTimeout(()=>{if(!$("bForm").querySelector("[data-bdel]")){const b=document.createElement("button");b.type="button";b.className="btn sm ghost danger";b.dataset.bdel=x.id;b.textContent="삭제";b.onclick=()=>{const id=x.id;if(bArm!==id){bArm=id;b.textContent="정말 삭제";return}bArm=null;store.del("items",id).then(()=>{bReset();b.remove();toast("삭제했어요.");render()},fail)};$("bCancel").after(b);$("bCancel").addEventListener("click",()=>b.remove(),{once:true});$("bSave").addEventListener("click",()=>setTimeout(()=>b.remove(),50),{once:true})}},0);
+});
 
 let animKey="";
 function render(){
@@ -1338,7 +1455,7 @@ function render(){
   const act=document.activeElement,fid=act&&act.id&&act.id.indexOf("c-")===0?act.id:null,sel=fid?act.selectionStart:0;
   header();
   const v=view();
-  if(v==="plan")renderPlan();else if(v==="week")renderWeek();else if(v==="rec")renderRec();else if(v==="cand"){renderCand();drawStayMap()}else if(v==="todo")renderTodo();
+  if(v==="plan")renderPlan();else if(v==="week")renderWeek();else if(v==="rec")renderRec();else if(v==="cand"){renderCand();drawStayMap()}else if(v==="todo")renderBudget();
   if(fid){const el=$(fid);if(el){el.focus();try{el.setSelectionRange(sel,sel)}catch(e){}}}
 }
 
@@ -1547,7 +1664,6 @@ document.addEventListener("click",e=>{
   if(zb){const z=ZONES.find(x=>x.k===zb.dataset.zone);showZones=true;$("zoneBtn").setAttribute("aria-pressed",true);location.hash="#plan";if(innerWidth<900){$("plan").dataset.mode="map";document.querySelectorAll("#modeSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mode==="map"))}setTimeout(()=>{if(map){map.invalidateSize();map.fitBounds(z.b,{padding:[40,40]})}},400);return}
   if(e.target.closest("#restoreBtn")){if(armed!=="restore"){armed="restore";render();setTimeout(()=>{if(armed==="restore"){armed=null;render()}},4000);return}armed=null;seedDefaults(true);return}
   const au=e.target.closest("[data-auto]");if(au){if(store)autoTime(au.dataset.auto);return}
-  const sg=e.target.closest("[data-sug]");if(sg){if(store)store.add("items",{cat:"todo",title:sg.dataset.sug,done:false,by:me,at:Date.now()}).catch(fail);return}
   const b=e.target.closest("[data-act]");if(!b||!store)return;
   const id=b.dataset.id,act=b.dataset.act,it=items.find(i=>i.id===id);
   if(act==="cdel"){store.del("comments",id).catch(fail);return}
@@ -1562,7 +1678,6 @@ document.addEventListener("click",e=>{
 document.addEventListener("input",e=>{if(e.target.id&&e.target.id.indexOf("c-")===0)drafts[e.target.id.slice(2)]=e.target.value});
 document.addEventListener("submit",e=>{const f=e.target.closest(".cform[data-item]");if(!f)return;e.preventDefault();if(!me){askWho();return}const id=f.dataset.item,text=(drafts[id]||"").trim();if(!text||!store)return;drafts[id]="";store.add("comments",{item:id,text,by:me,at:Date.now()}).catch(fail)});
 document.addEventListener("change",e=>{const id=e.target.dataset&&e.target.dataset.todo;if(id&&store)store.update("items",id,{done:e.target.checked,doneBy:e.target.checked?me:""}).catch(fail)});
-$("todoForm").addEventListener("submit",e=>{e.preventDefault();const v=$("todoIn").value.trim();if(v&&store){store.add("items",{cat:"todo",title:v.slice(0,60),done:false,by:me,at:Date.now()}).catch(fail);$("todoIn").value=""}});
 $("addPlan").addEventListener("click",()=>openForm(null,"plan"));
 $("addCand").addEventListener("click",()=>openForm(null,candCat));
 $("fullBtn").addEventListener("click",()=>setFull(!$("mapPane").classList.contains("full")));
