@@ -206,6 +206,18 @@ body.mapfull{overflow:hidden}
 .sun{display:grid;grid-template-columns:54px 1fr;gap:10px;margin:4px 0}
 .sun span{font-size:11.5px;font-weight:800;color:var(--muted);display:flex;align-items:center;gap:8px}
 .sun span::after{content:"";flex:1;border-top:1px dashed var(--steel)}
+.krblock{border:1.5px dashed var(--steel);border-radius:18px;padding:10px 10px 4px;margin:0 0 10px;background:color-mix(in srgb,var(--steel) 8%,transparent)}
+.krhead{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;color:var(--muted);margin:0 0 8px 4px}
+.krhead svg{width:15px;height:15px}
+.flybar{display:flex;align-items:center;gap:8px;margin:2px 0 12px;padding:8px 12px;border-radius:999px;background:var(--deep);color:#fff;font-size:12.5px;font-weight:800}
+.flybar svg{width:16px;height:16px;flex:none}
+.agkr{margin:4px 8px;padding:6px 8px;border:1px dashed var(--steel);border-radius:10px;font-size:11.5px;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+.agkr b{font-size:10.5px;letter-spacing:.04em}
+.agkr div{color:var(--ink)}
+.agkr i{font-style:normal;font-size:10px;font-weight:800;color:#fff;background:var(--mc);border-radius:999px;padding:0 5px}
+#stayMapBox{position:relative;height:min(48vh,440px);min-height:300px;border-radius:22px;overflow:hidden;isolation:isolate;border:1px solid var(--line);box-shadow:var(--shadow);margin:0 0 14px;background:var(--field)}
+#stayMap{position:absolute;inset:0}
+.ccard.flash{box-shadow:0 0 0 3px var(--accent),var(--shadow)}
 .empty{border:1.5px dashed var(--line);border-radius:var(--r);padding:20px;text-align:center;color:var(--muted);font-weight:600}
 .thread{border-top:1px solid var(--line);padding-top:8px;display:flex;flex-direction:column;gap:6px}
 .cm{font-size:13.5px;display:flex;gap:8px;align-items:flex-start}
@@ -224,6 +236,7 @@ body.mapfull{overflow:hidden}
 .mk .fk svg{width:10px;height:10px}
 .mk.hotel{border-radius:9px;background:#071B33}
 .mk.star{width:24px;height:24px;line-height:20px;background:#fff;color:#0B5689;border-color:#0B5689;font-size:13px}
+.ptag.dec{background:#1D7A5A;color:#fff;border-color:#1D7A5A}
 .ptag{display:inline-block;background:#fff;color:#0E2238;border:1.5px solid #0E2238;border-radius:999px;font:800 11.5px/20px var(--font);padding:0 8px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.25);transform:translateX(-0%)}
 .zlabel{background:rgba(255,255,255,.9);border:0;box-shadow:none;font:700 11.5px/1.2 var(--font);color:#0E2238;padding:2px 6px;border-radius:6px;white-space:nowrap}
 .zlabel::before{display:none}
@@ -304,6 +317,7 @@ dialog h2{font:900 22px/1.2 var(--serif);margin:0}
 /* ---------- export (off-screen) ---------- */
 #exportRoot{position:fixed;left:-20000px;top:0;width:1123px;color:#0E2238;background:#fff;font-family:var(--font)}
 #exportRoot{--surface:#fff;--solid:#fff;--line:#c9d3df;--muted:#4D6481;--ink:#0E2238;--field:#F3F6FA}
+.xpage .agkr{background:#fff}
 .xpage .ag.isMeal{background:#FFF3E8;box-shadow:none;border-left:3px solid var(--mc);padding-left:5px}
 .xpage .ag b,.xpage .num{font-variant-numeric:normal}
 .xpage{width:1123px;height:794px;padding:28px 30px;background:#fff;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:12px}
@@ -422,6 +436,7 @@ dialog h2{font:900 22px/1.2 var(--serif);margin:0}
       <input id="abnbIn" inputmode="url" autocomplete="off" placeholder="에어비앤비 숙소 링크 붙여넣기 (airbnb.co.kr/rooms/...)">
       <button class="btn deep" type="submit">숙소 추가</button>
     </form>
+    <div id="stayMapBox" hidden><div id="stayMap"></div><div class="maplegend" id="stayLegend"></div></div>
     <div class="grid" id="cands"></div>
   </section>
 
@@ -444,6 +459,7 @@ dialog h2{font:900 22px/1.2 var(--serif);margin:0}
       </div>
       <div class="two">
         <label class="f" for="fStay">머무는 시간(분)<input id="fStay" type="number" inputmode="numeric" min="5" max="900" step="5"></label>
+        <label class="f" for="fKr" style="grid-column:1/-1">어디서<select id="fKr"><option value="">일본 (삿포로·홋카이도)</option><option value="1">한국 (출발 전 · 도착 후)</option></select></label>
         <label class="f" for="fMeal">식사<select id="fMeal"><option value="">식사 아님</option><option value="b">아침</option><option value="l">점심</option><option value="d">저녁</option><option value="c">카페·간식</option></select></label>
       </div>
       <div class="two">
@@ -499,6 +515,8 @@ const ICON={
   fork:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 3v8a2 2 0 0 0 2 2v8M11 3v8a2 2 0 0 1-2 2M9 3v6M17 21V3c-2 1-3 4-3 8h3"/></svg>',
   walk:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m10 21 2-6 3 3v3M8 12l2-4 4 1 2 3 3 1M10 8l-1 5"/></svg>',
   transit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 11h14M8 21l2-4M16 21l-2-4"/><circle cx="9" cy="14" r=".5"/><circle cx="15" cy="14" r=".5"/></svg>',
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/></svg>',
+  plane:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16l20-6-3-2-6 2-6-6-2 1 4 6-5 2-2-1-1 1z"/></svg>',
   car:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M6 17v2M18 17v2M4 13l2-6h12l2 6v4H4z"/><path d="M9 4h6"/></svg>'
 };
 const TABS=[["plan","일정"],["week","한눈에"],["rec","추천"],["cand","후보"],["todo","준비물"]];
@@ -563,6 +581,27 @@ async function fireStore(){
 }
 const BLANK={a:"",b:"",price:0,link:"",memo:"",place:"",gmap:"",photo:"",lat:null,lng:null,day:"",time:"",stay:0,meal:"",mode:"",travel:0,decided:false,votes:{}};
 function presetDoc(p){const c=p.cat||"plan";const d=Object.assign({},BLANK,{cat:c,src:"preset",by:"Claude 추천",at:Date.now()},p);if(c==="stays")d.decided=true;if(c==="plan"&&d.lat!=null&&!d.place)d.place=d.title;return d}
+const PRESET_KR=[
+ {day:"12-13",time:"09:00",stay:20,title:"인천공항 제2터미널 집결",place:"인천국제공항 제2여객터미널",memo:"KE769(대한항공)는 제2터미널. 3층 출국장 대한항공 카운터 앞에서 만나기. 공항철도·리무진 시간 미리 확인"},
+ {day:"12-13",time:"09:20",stay:40,title:"탑승 수속·수하물 위탁",place:"인천국제공항 제2여객터미널",memo:"여권, 전자항공권. 보조배터리는 기내로"},
+ {day:"12-13",time:"10:00",stay:40,meal:"l",title:"공항 점심",place:"인천국제공항 제2여객터미널",memo:"기내식이 나오면 가볍게"},
+ {day:"12-13",time:"10:45",stay:30,title:"보안검색·출국심사",place:"인천국제공항 제2여객터미널"},
+ {day:"12-13",time:"11:15",stay:40,title:"면세점·게이트 이동",place:"인천국제공항 제2여객터미널",memo:"탑승 시작은 보통 출발 40분 전"},
+ {day:"12-13",time:"12:35",stay:5,title:"KE769 출발 (인천 → 신치토세)",place:"인천국제공항 제2여객터미널"},
+ {day:"12-17",time:"17:15",stay:45,title:"인천 도착 (YP752) · 입국·수하물",place:"인천국제공항 제1여객터미널",memo:"YP752(에어프레미아)는 제1터미널 도착"},
+ {day:"12-17",time:"18:00",stay:60,title:"공항철도·리무진으로 이동",place:"인천국제공항 제1여객터미널"},
+ {day:"12-17",time:"19:00",stay:60,meal:"d",title:"마무리 저녁·해산",memo:"선택 일정"}
+];
+let seedingKr=false;
+async function seedKr(onlyMissing){
+  if(seedingKr||!store)return;seedingKr=true;
+  try{
+    if(!onlyMissing)await store.set("items","cfg-seeded-kr",{cat:"cfg",key:"seeded-kr",at:Date.now()});
+    for(let i=0;i<PRESET_KR.length;i++){const id="seedkr-"+String(i).padStart(2,"0");if(onlyMissing&&items.some(x=>x.id===id))continue;
+      await store.set("items",id,Object.assign({},BLANK,{cat:"plan",kr:true,src:"preset",by:"Claude 추천",at:Date.now()},PRESET_KR[i]))}
+  }catch(e){fail()}
+  seedingKr=false;
+}
 async function seedDefaults(onlyMissing){
   if(seeding||!store)return;seeding=true;
   try{
@@ -572,6 +611,7 @@ async function seedDefaults(onlyMissing){
       if(onlyMissing&&items.some(x=>x.id===id))continue;
       await store.set("items",id,presetDoc(PRESET[i]));
     }
+    if(onlyMissing)await seedKr(true);
     toast(onlyMissing?"빠진 기본 일정을 다시 넣었습니다.":"기본 일정을 불러왔습니다.");
   }catch(e){fail()}
   seeding=false;
@@ -613,7 +653,11 @@ function dirUrl(a,b,mode,way){let u=GM+"dir/?api=1&origin="+ll(a)+"&destination=
 function mapUrl(it){if(isUrl(it.gmap))return it.gmap;if(it.place)return GM+"search/?api=1&query="+encodeURIComponent(it.place);const p=pos(it);return p?GM+"search/?api=1&query="+ll(p):""}
 const baseItem=()=>items.find(i=>i.cat==="stays"&&i.decided&&pos(i));
 function dayPlan(k){
-  const stops=items.filter(i=>i.cat==="plan"&&(i.day||"")===k).sort((a,b)=>(a.time||"99").localeCompare(b.time||"99")||(a.at||0)-(b.at||0));
+  const sortT=(a,b)=>(a.time||"99").localeCompare(b.time||"99")||(a.at||0)-(b.at||0);
+  const stops=items.filter(i=>i.cat==="plan"&&(i.day||"")===k&&!i.kr).sort(sortT);
+  const kr=items.filter(i=>i.cat==="plan"&&(i.day||"")===k&&i.kr).sort(sortT);
+  const firstT=stops.length&&stops[0].time?stops[0].time:(k==="12-17"?"00:00":"99");
+  const krBefore=kr.filter(x=>(x.time||"00:00")<firstT),krAfter=kr.filter(x=>krBefore.indexOf(x)<0);
   const b=pos(baseItem()),legs=[];let move=0;
   stops.forEach((s,i)=>{
     const from=i?pos(stops[i-1]):(k==="12-13"?null:b);
@@ -623,7 +667,7 @@ function dayPlan(k){
   });
   let back=null;
   if(b&&stops.length&&k!=="12-17"){const last=stops[stops.length-1];back=legInfo(pos(last),b,null);if(back){move+=back.min;if(last.time)back.arrive=toMin(last.time)+stayOf(last)+back.min}}
-  return {stops,legs,back,move,base:b};
+  return {stops,legs,back,move,base:b,krBefore,krAfter,all:krBefore.concat(stops,krAfter)};
 }
 
 /* ---------- weather ---------- */
@@ -699,13 +743,13 @@ function actsHtml(it,decide){
   if(up.length||down.length)h+='<div class="counts">'+(up.length?esc(up.join(", "))+" 좋아요":"")+(down.length?" · "+esc(down.join(", "))+" 글쎄":"")+'</div>';
   return h;
 }
-function stopHtml(s,i,D){
+function stopHtml(s,i,D,label,color){
   const st=toMin(s.time),m=s.meal&&MEAL[s.meal],open=openCard===s.id;
   const nC=comments.filter(c=>c.item===s.id).length,nU=voters(s,1).length;
   let h='<div class="stop"><div class="tm num">'+(st!=null?hm(st):"—")+'<small>'+dur(stayOf(s))+'</small></div>';
   h+='<article class="card'+(m?" meal-card":"")+'"'+(m?' style="--mc:'+m.c+'"':'')+'>';
   h+='<button class="expand" type="button" data-open="'+s.id+'" aria-expanded="'+open+'" aria-label="'+esc(s.title)+' 자세히"></button>';
-  h+='<div class="top"><span class="pin" style="background:'+D.c+'">'+(i+1)+'</span><h4>'+esc(s.title)+'</h4>'+mealTag(s.meal)+'</div>';
+  h+='<div class="top"><span class="pin" style="background:'+(color||D.c)+'">'+(label||(i+1))+'</span><h4>'+esc(s.title)+'</h4>'+mealTag(s.meal)+'</div>';
   const sub=[];if(st!=null)sub.push(hm(st)+"–"+hm(st+stayOf(s)));if(s.price)sub.push(won(s.price));if(nU)sub.push("좋아요 "+nU);if(nC)sub.push("의견 "+nC);if(!open&&s.memo)sub.push(esc(String(s.memo).slice(0,30))+(String(s.memo).length>30?"…":""));
   h+='<div class="sub num">'+sub.join(" · ")+'</div>';
   if(open)h+='<div class="more">'+(s.memo?'<p class="memo">'+esc(s.memo)+'</p>':'')+actsHtml(s,false)+threadHtml(s)+'</div>';
@@ -714,11 +758,15 @@ function stopHtml(s,i,D){
 function dayBlock(D){
   const P=dayPlan(D.k);
   let h='<div class="dayhead"><h3><i style="background:'+D.c+'"></i>'+D.n+'일차 · '+D.l+' ('+D.w+')</h3><span class="stat num">'+P.stops.length+'곳'+(P.move?' · 이동 '+dur(P.move):'')+'</span></div>';
-  h+='<div class="meals">'+["b","l","d"].map(k=>{const x=P.stops.filter(s=>s.meal===k);return '<div class="meal'+(x.length?"":" none")+'" style="--mc:'+MEAL[k].c+'"><b>'+ICON.fork+MEAL[k].l+'</b><span>'+(x.length?esc(x.map(s=>s.title).join(", ")):"미정")+'</span></div>'}).join("")+'</div>';
+  h+='<div class="meals">'+["b","l","d"].map(k=>{const x=P.all.filter(s=>s.meal===k);return '<div class="meal'+(x.length?"":" none")+'" style="--mc:'+MEAL[k].c+'"><b>'+ICON.fork+MEAL[k].l+'</b><span>'+(x.length?esc(x.map(s=>s.title).join(", ")):"미정")+'</span></div>'}).join("")+'</div>';
   const pts=P.stops.map(pos).filter(Boolean);let r="";
   if(P.base&&pts.length&&D.k!=="12-13")r=dirUrl(P.base,pts[pts.length-1],"transit",pts.slice(0,-1));else if(pts.length>=2)r=dirUrl(pts[0],pts[pts.length-1],"transit",pts.slice(1,-1));
   h+='<div class="dayactions">'+(P.stops.length>1?'<button class="btn sm" type="button" data-auto="'+D.k+'">시간 자동 맞추기</button>':'')+(r?'<a class="btn sm" href="'+esc(r)+'" target="_blank" rel="noopener noreferrer">하루 동선 구글 지도</a>':'')+'</div>';
-  if(!P.stops.length)return h+'<div class="empty">아직 일정이 없습니다.</div>';
+  const krBlock=(arr,title)=>arr.length?'<div class="krblock"><div class="krhead">'+ICON.home+esc(title)+'</div><div class="tl">'+arr.map(s=>stopHtml(s,0,D,"한","#5B6B82")).join("")+'</div></div>':"";
+  const fly=(t)=>'<div class="flybar">'+ICON.plane+'<span>'+esc(t)+'</span></div>';
+  if(D.k==="12-13"){h+=krBlock(P.krBefore,"한국에서 · 출발 전");if(P.krBefore.length)h+=fly("인천 12:35 → 신치토세 15:20 · KE769")}
+  else h+=krBlock(P.krBefore,"한국에서");
+  if(!P.stops.length&&!P.krAfter.length)return h+(P.krBefore.length?"":'<div class="empty">아직 일정이 없습니다.</div>');
   h+='<div class="tl">';let sun=false;
   P.stops.forEach((s,i)=>{
     h+=legHtml(P.legs[i],i?"":"숙소에서",!i&&P.legs[i]&&typeof P.legs[i].leave==="number"?hm(P.legs[i].leave)+" 출발":"");
@@ -727,7 +775,9 @@ function dayBlock(D){
     h+=stopHtml(s,i,D);
   });
   if(P.back)h+=legHtml(P.back,"숙소까지",typeof P.back.arrive==="number"?hm(P.back.arrive)+" 도착":"");
-  return h+'</div>';
+  h+='</div>';
+  if(P.krAfter.length){if(D.k==="12-17")h+=fly("신치토세 13:45 → 인천 17:15 · YP752");h+=krBlock(P.krAfter,D.k==="12-17"?"한국에서 · 도착 후":"한국에서")}
+  return h;
 }
 function renderPlan(){
   dayStrip();
@@ -804,10 +854,13 @@ function agendaHtml(forExport){
   return DAYS.map((D,di)=>{
     const P=dayPlan(D.k),w=wx[di];
     let a='<div class="agcol"><div class="aghead" style="background:'+D.c+'"><b>'+D.n+'일차 · '+D.l+' ('+D.w+')</b><small class="num">'+w.hi+'°/'+w.lo+'°</small></div>';
-    a+='<div class="agmeals">'+["b","l","d"].map(k=>{const x=P.stops.filter(s=>s.meal===k);return '<div style="--mc:'+MEAL[k].c+'"><b>'+MEAL[k].l+'</b><span>'+(x.length?esc(x.map(s=>s.title).join(", ")):"미정")+'</span></div>'}).join("")+'</div>';
+    a+='<div class="agmeals">'+["b","l","d"].map(k=>{const x=P.all.filter(s=>s.meal===k);return '<div style="--mc:'+MEAL[k].c+'"><b>'+MEAL[k].l+'</b><span>'+(x.length?esc(x.map(s=>s.title).join(", ")):"미정")+'</span></div>'}).join("")+'</div>';
+    const krRows=(arr,label)=>arr.length?'<div class="agkr"><b>'+label+'</b>'+arr.map(s=>{const t=toMin(s.time),m=s.meal&&MEAL[s.meal];return '<div>'+(t!=null?hm(t):"")+(m?' <i style="--mc:'+m.c+'">'+m.l+'</i>':'')+' '+esc(s.title)+'</div>'}).join("")+'</div>':"";
+    a+=krRows(P.krBefore,"한국 · 출발 전");
     P.stops.forEach((s,i)=>{const t=toMin(s.time),lg=P.legs[i],m=s.meal&&MEAL[s.meal];
       a+='<div class="ag'+(m?" isMeal":"")+'"'+(m?' style="--mc:'+m.c+'"':'')+'><span class="n" style="background:'+D.c+'">'+(i+1)+'</span><span><b>'+(t!=null?hm(t):"미정")+'</b>'+(m?'<i>'+m.l+'</i>':'')+' '+esc(s.title)+(lg&&lg.a?'<em>'+MODE[lg.mode]+' '+(lg.real?"":"약 ")+dur(lg.min)+' 이동</em>':'')+'</span></div>'});
-    if(!P.stops.length)a+='<div class="ag"><span></span><span>일정 없음</span></div>';
+    a+=krRows(P.krAfter,"한국 · 도착 후");
+    if(!P.all.length)a+='<div class="ag"><span></span><span>일정 없음</span></div>';
     return a+'</div>';
   }).join("");
 }
@@ -836,15 +889,35 @@ function renderCand(){
   document.querySelectorAll("#candSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.c===candCat));
   $("abnbForm").hidden=candCat!=="stays";$("addCand").textContent="+ "+CATS[candCat].add.replace(" 추가","");
   const C=CATS[candCat],list=items.filter(i=>i.cat===candCat).sort((a,b)=>(b.decided?1:0)-(a.decided?1:0)||voters(b,1).length-voters(a,1).length||(a.at||0)-(b.at||0));
+  $("stayMapBox").hidden=candCat!=="stays";
   $("cands").innerHTML=list.length?list.map(it=>{
-    let h='<article class="ccard'+(it.decided?" decided":"")+'">'+(it.photo&&isUrl(it.photo)?'<div class="ph" style="background-image:url(&quot;'+esc(it.photo)+'&quot;)"></div>':'');
+    let h='<article class="ccard'+(it.decided?" decided":"")+'" id="card-'+it.id+'">'+(it.photo&&isUrl(it.photo)?'<div class="ph" style="background-image:url(&quot;'+esc(it.photo)+'&quot;)"></div>':'');
     h+='<div class="bd"><div class="row" style="justify-content:space-between;align-items:flex-start"><h4>'+esc(it.title)+'</h4>'+(it.price?'<span class="price">'+won(it.price)+'</span>':'')+'</div>';
     let kv="";if(it.place)kv+='<dt>위치</dt><dd>'+esc(it.place)+'</dd>';if(it.a&&C.a)kv+='<dt>'+C.a[0]+'</dt><dd>'+esc(it.a)+'</dd>';if(it.b&&C.b)kv+='<dt>'+C.b[0]+'</dt><dd>'+esc(it.b)+'</dd>';
     if(kv)h+='<dl class="kv">'+kv+'</dl>';if(it.memo)h+='<p class="memo">'+esc(it.memo)+'</p>';
     h+=actsHtml(it,true);
+    if(candCat==="stays"&&pos(it))h+='<button class="btn sm" type="button" data-staypin="'+it.id+'" style="align-self:flex-start">숙소 지도에서 위치 보기</button>';
     h+='<button class="btn sm ghost" type="button" data-open="'+it.id+'" style="align-self:flex-start">의견 '+comments.filter(c=>c.item===it.id).length+(openCard===it.id?" 닫기":"")+'</button>';
     if(openCard===it.id)h+=threadHtml(it);
     return h+'</div></article>'}).join(""):'<div class="empty">아직 후보가 없습니다.</div>';
+}
+
+let stayMap=null,stayLayer=null,stayMarks={},stayFit=false;
+function drawStayMap(){
+  if(!window.L||candCat!=="stays")return;
+  if(!stayMap){stayMap=L.map("stayMap",{zoomControl:false}).setView([43.055,141.352],14);L.control.zoom({position:"bottomright"}).addTo(stayMap);baseLayer(stayMap,false);stayLayer=L.layerGroup().addTo(stayMap);
+    stayMap.on("popupopen",e=>{const a=e.popup.getElement().querySelector("[data-showcard]");if(a)a.onclick=ev=>{ev.preventDefault();const el=$("card-"+a.dataset.showcard);if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),1600)}}})}
+  stayLayer.clearLayers();stayMarks={};
+  ZONES.forEach(z=>L.rectangle(z.b,{color:z.c,weight:2,fillColor:z.c,fillOpacity:.12,dashArray:"6 6"}).bindTooltip(z.rank+" · "+z.name,{permanent:true,direction:"center",className:"zlabel"}).bindPopup('<b>'+esc(z.rank+" · "+z.name)+'</b><br>좋은 점: '+esc(z.good)+'<br>아쉬운 점: '+esc(z.bad)).addTo(stayLayer));
+  const pts=[];
+  items.filter(x=>x.cat==="stays"&&pos(x)).forEach(x=>{
+    const t=x.decided?"확정":(x.price?"₩"+Math.round(x.price/1000)+"천":"후보");pts.push(pos(x));
+    const mk=L.marker(pos(x),{icon:L.divIcon({className:"",html:'<div class="ptag'+(x.decided?" dec":"")+'">'+t+'</div>',iconSize:[56,24],iconAnchor:[28,12]}),zIndexOffset:x.decided?400:0})
+      .bindPopup((x.photo&&isUrl(x.photo)?'<img src="'+esc(x.photo)+'" alt="" style="width:220px;height:124px;object-fit:cover;border-radius:8px;display:block;margin-bottom:6px">':'')+'<b>'+esc(x.title)+'</b><br>1인 '+won(x.price)+(x.a?'<br><span style="color:#4D6481">'+esc(x.a)+'</span>':'')+'<div class="pop-opts"><a href="#" data-showcard="'+x.id+'">카드 보기</a>'+(isUrl(x.link)?'<a href="'+esc(x.link)+'" target="_blank" rel="noopener noreferrer">예약 페이지</a>':'')+'</div>',{maxWidth:240}).addTo(stayLayer);
+    stayMarks[x.id]=mk;
+  });
+  $("stayLegend").innerHTML='<span>점선 구역: Claude 추천 숙소 구역</span><span>가격 태그: 후보 숙소 (1인)</span><span>위치는 대략적</span>';
+  setTimeout(()=>{stayMap.invalidateSize();if(!stayFit&&pts.length){stayFit=true;stayMap.fitBounds(pts.map(p=>[p.lat,p.lng]).concat(ZONES.map(z=>z.b[0]),ZONES.map(z=>z.b[1])),{padding:[30,30],maxZoom:15})}},60);
 }
 
 /* ---------- todo ---------- */
@@ -858,7 +931,7 @@ function render(){
   const act=document.activeElement,fid=act&&act.id&&act.id.indexOf("c-")===0?act.id:null,sel=fid?act.selectionStart:0;
   header();
   const v=view();
-  if(v==="plan")renderPlan();else if(v==="week")renderWeek();else if(v==="rec")renderRec();else if(v==="cand")renderCand();else if(v==="todo")renderTodo();
+  if(v==="plan")renderPlan();else if(v==="week")renderWeek();else if(v==="rec")renderRec();else if(v==="cand"){renderCand();drawStayMap()}else if(v==="todo")renderTodo();
   if(fid){const el=$(fid);if(el){el.focus();try{el.setSelectionRange(sel,sel)}catch(e){}}}
 }
 
@@ -878,7 +951,7 @@ function openForm(it,asCat){
   $("fTitle").value=g("title");$("fA").value=g("a");$("fB").value=g("b");$("fPlace").value=it?(it.place||it.gmap||""):"";$("fPhoto").value=g("photo");
   $("fPrice").value=it&&it.price?it.price:"";$("fLink").value=g("link");$("fMemo").value=g("memo");
   $("fDay").value=it&&it.day?it.day:(selDay!=="all"?selDay:"12-13");$("fTime").value=g("time");
-  $("fStay").value=it&&it.stay?it.stay:60;$("fMeal").value=g("meal");$("fMode").value=g("mode");$("fTravel").value=it&&it.travel?it.travel:"";
+  $("fStay").value=it&&it.stay?it.stay:60;$("fMeal").value=g("meal");$("fMode").value=g("mode");$("fTravel").value=it&&it.travel?it.travel:"";$("fKr").value=it&&it.kr?"1":"";
   $("geoRes").innerHTML="";$("geoMsg").textContent="찾기를 누르거나 지도를 눌러 위치를 찍으세요.";
   $("dlg").showModal();
   if(!$("wPlace").hidden&&window.L){
@@ -908,7 +981,8 @@ $("form").addEventListener("submit",e=>{
   const pl=$("fPlace").value.trim(),num=id=>Number(String($(id).value).replace(/[^0-9]/g,""))||0,hasPlace=c==="plan"||C.place;
   const d={cat:c,title,a:C.a?$("fA").value.trim():"",b:C.b?$("fB").value.trim():"",price:num("fPrice"),link,memo:$("fMemo").value.trim(),photo:C.photo?$("fPhoto").value.trim():"",
     place:hasPlace&&!isUrl(pl)?pl:"",gmap:hasPlace&&isUrl(pl)?pl:"",lat:hasPlace&&formPos?formPos.lat:null,lng:hasPlace&&formPos?formPos.lng:null,
-    day:c==="plan"?$("fDay").value:"",time:c==="plan"?$("fTime").value:"",stay:c==="plan"?(num("fStay")||60):0,meal:c==="plan"?$("fMeal").value:"",mode:c==="plan"?$("fMode").value:"",travel:c==="plan"?num("fTravel"):0};
+    day:c==="plan"?$("fDay").value:"",time:c==="plan"?$("fTime").value:"",stay:c==="plan"?(num("fStay")||60):0,meal:c==="plan"?$("fMeal").value:"",mode:c==="plan"?$("fMode").value:"",travel:c==="plan"?num("fTravel"):0,kr:c==="plan"&&$("fKr").value==="1"};
+  if(d.kr){d.lat=null;d.lng=null;d.mode="";d.travel=0}
   const btn=$("saveBtn"),was=editing;btn.disabled=true;let p;
   if(was){d.editedBy=me;d.editedAt=Date.now();p=store.update("items",was.id,d)}
   else{d.by=me;d.at=Date.now();d.decided=false;d.votes={};p=store.add("items",d)}
@@ -1014,6 +1088,10 @@ document.addEventListener("click",e=>{
   if(ms&&ms.closest("#modeSeg")){$("plan").dataset.mode=ms.dataset.mode;document.querySelectorAll("#modeSeg button").forEach(b=>b.setAttribute("aria-pressed",b===ms));fitKey="";render();return}
   const cs=e.target.closest("[data-c]");
   if(cs){candCat=cs.dataset.c;openCard=null;render();return}
+  const sp=e.target.closest("[data-staypin]");
+  if(sp){const m=stayMarks[sp.dataset.staypin];if(m&&stayMap){$("stayMapBox").scrollIntoView({behavior:"smooth",block:"start"});stayMap.setView(m.getLatLng(),16);setTimeout(()=>m.openPopup(),350)}return}
+  const sc=e.target.closest("[data-showcard]");
+  if(sc){e.preventDefault();const el=$("card-"+sc.dataset.showcard);if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),1600)}return}
   const op=e.target.closest("[data-open]");
   if(op){openCard=openCard===op.dataset.open?null:op.dataset.open;render();return}
   const rc=e.target.closest("[data-rec]");
@@ -1053,6 +1131,7 @@ function begin(s,isShared){
   store=s;shared=isShared;
   s.watch("items",(d,meta)=>{items=d;loaded=true;
     if(!(meta&&meta.fromCache)&&!items.some(i=>i.cat==="cfg"&&i.key==="seeded")&&!items.some(i=>i.cat!=="cfg"))seedDefaults(false);
+    else if(!(meta&&meta.fromCache)&&!seeding&&items.some(i=>i.cat==="cfg"&&i.key==="seeded")&&!items.some(i=>i.cat==="cfg"&&i.key==="seeded-kr"))seedKr(false);
     render()},()=>{connErr=true;loaded=true;render()});
   s.watch("comments",d=>{comments=d;render()},()=>{});
 }
