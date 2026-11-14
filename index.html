@@ -5,14 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>삿포로 여행 계획표</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;900&display=swap" rel="stylesheet">
 <script>
 /* ================= 설정 (여기만 고치면 됩니다) =================
    1) Firebase 콘솔에서 받은 firebaseConfig 를 아래 null 자리에 붙여 넣으세요.
       예) const FIREBASE_CONFIG = { apiKey:"...", authDomain:"...", projectId:"...", appId:"..." };
       null 로 두면 이 기기에만 저장되는 혼자 보기 모드로 동작합니다.
-   2) TRIP_ID 는 세 명만 아는, 추측하기 어려운 값으로 바꾸세요. */
-const FIREBASE_CONFIG = null;
-const TRIP_ID = "sapporo-2026-12-change-me";
+   2) 공유 데이터 위치는 '여행 암호'로 정해집니다. 암호는 파일에 적지 않고, 처음 열 때 한 번 입력합니다.
+      친구에게는 주소 뒤에 ?k=암호 를 붙여 보내면 바로 들어옵니다. */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBYPw8acBAMY2yf7pN9bIXbrD6BtWbH0Q4",
+  authDomain: "sapporo-trip-59415.firebaseapp.com",
+  projectId: "sapporo-trip-59415",
+  storageBucket: "sapporo-trip-59415.firebasestorage.app",
+  messagingSenderId: "85857852864",
+  appId: "1:85857852864:web:709bf7198f482e7104fc25"
+};
+const MEMBERS = ["강동현","김도현","김정범"];
 /* 3) 구글 지도 API 키. 비워 두면 Esri 지도로 동작합니다.
       구글 클라우드 콘솔에서 이 키를 웹사이트 주소(https://beom0313.github.io/*)로 제한해 두세요. */
 const GOOGLE_MAPS_KEY = "AIzaSyDrRfCbniSHZtB44S_XjQsBQVIJ58qpcJY";
@@ -27,7 +38,8 @@ const GOOGLE_MAPS_KEY = "AIzaSyDrRfCbniSHZtB44S_XjQsBQVIJ58qpcJY";
   --sheet:rgba(244,242,236,.94);--field:#f7f5f0;--line:rgba(22,52,78,.18);
   --good:#1f6f52;--good-bg:#d9eadf;--warn:#a33b2e;--warn-bg:#f3ddd8;
   --shadow:0 .5rem 1.75rem rgba(20,25,29,.1);--hh:2.75rem;
-  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Apple SD Gothic Neo","Pretendard","Malgun Gothic",system-ui,sans-serif;
+  --font:"Pretendard Variable","Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --serif:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
@@ -175,6 +187,47 @@ td.t{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
 .ev{white-space:nowrap;text-overflow:ellipsis;position:absolute;left:.1875rem;right:.1875rem;border-radius:.5rem;color:#fff;padding:.125rem .375rem;font-size:.75rem;line-height:1.25;font-weight:600;overflow:hidden;border:0;text-align:left;cursor:pointer;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .ev small{display:block;white-space:nowrap;font-weight:500;opacity:.9;font-variant-numeric:tabular-nums}
 .untimed{font-size:.75rem;color:var(--muted);font-weight:600;padding:.25rem;min-height:1.5rem}
+/* ===== redesign: winter editorial ===== */
+#progress{position:fixed;left:0;top:0;height:3px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:var(--accent);z-index:50}
+.snow{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.snow i{position:absolute;top:-2vh;width:6px;height:6px;border-radius:50%;background:#fff;opacity:.75;animation:fall linear infinite;will-change:transform}
+@keyframes fall{to{transform:translate3d(var(--dx),104vh,0)}}
+.wrap{position:relative;z-index:1}
+.hero{padding:clamp(1.25rem,4vw,2.25rem);border-radius:2rem;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-6rem;top:-6rem;width:22rem;height:22rem;border-radius:50%;background:radial-gradient(circle,var(--glow-a),transparent 70%);opacity:.55;pointer-events:none}
+.kicker{font-size:.75rem;font-weight:700;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+h1{font-family:var(--serif);font-weight:900;font-size:clamp(2.4rem,8vw,4.75rem);line-height:.98;letter-spacing:-.035em}
+h1 em{font-style:normal;display:block;font-size:.42em;font-weight:600;letter-spacing:-.01em;color:var(--muted);margin-top:.5rem}
+.herogrid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1rem 2rem;align-items:end;position:relative;z-index:1}
+.ddbig{text-align:right;font-variant-numeric:tabular-nums;line-height:1}
+.ddbig b{display:block;font-family:var(--serif);font-weight:900;font-size:clamp(3rem,10vw,6rem);letter-spacing:-.04em}
+.ddbig span{font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--muted)}
+.route{display:grid;grid-template-columns:auto 1fr auto 1fr auto;gap:.75rem;align-items:center;margin:.25rem 0;font-variant-numeric:tabular-nums;position:relative;z-index:1}
+.route .pt{display:flex;flex-direction:column;line-height:1.15}
+.route .pt b{font-size:1.375rem;letter-spacing:-.01em}
+.route .pt small{font-size:.75rem;color:var(--muted);font-weight:600}
+.route .ln{position:relative;border-top:2px dashed var(--line);height:0}
+.route .ln span{position:absolute;left:50%;top:-.8rem;transform:translateX(-50%);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:0 .5rem;font-size:.6875rem;font-weight:700;white-space:nowrap}
+.route .mid{text-align:center;font-size:.75rem;font-weight:700;color:var(--muted)}
+.me{display:inline-flex;align-items:center;gap:.5rem}
+.me i{width:1.75rem;height:1.75rem;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:700 .8125rem/1.75rem var(--font);text-align:center;font-style:normal}
+.who-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.625rem}
+.who-btn{border:1px solid var(--line);background:var(--field);border-radius:1.25rem;padding:1rem .5rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.5rem;font-weight:700;font-size:1rem;color:var(--ink);transition:transform .1s ease-out}
+.who-btn:active{transform:scale(.97)}
+.who-btn i{width:3rem;height:3rem;border-radius:50%;font:900 1.25rem/3rem var(--serif);font-style:normal;color:#fff;text-align:center}
+.who-btn[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.sec{font-family:var(--serif);font-weight:900;letter-spacing:-.02em}
+.dayhead h2{font-family:var(--serif);font-weight:900}
+.reveal{transform:translateY(14px);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.reveal.in{transform:none}
+@media (max-width:40rem){
+  .herogrid{grid-template-columns:1fr}
+  .ddbig{text-align:left}
+  .route{grid-template-columns:auto 1fr auto;row-gap:.5rem}
+  .route .mid,.route .ln.second{display:none}
+}
+@media (prefers-reduced-motion:reduce){.snow{display:none}.reveal{transform:none;transition:none}}
+
 /* print-only agenda (page 1) and route maps (page 2) */
 #agenda{display:none}
 .agrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2.5mm}
@@ -228,7 +281,7 @@ dialog h2{font-size:1.375rem;letter-spacing:-.015em;line-height:1.2;margin:0}
 @media print{
   @page{size:A4 landscape;margin:10mm}
   :root{--bg:#fff;--ink:#000;--muted:#333;--line:#bbb;--glass:#fff;--glass-edge:#bbb;--field:#fff;--hh:1.9rem;color-scheme:light}
-  .sky,.tabbar,.me,.tiles,.wxnote,#notice,#vPlan,#vList,#vRec,#vTodo,#vGmap,.noprint,#toast{display:none!important}
+  .snow,#progress,.route,.ddbig,.kicker,.sky,.tabbar,.me,.tiles,.wxnote,#notice,#vPlan,#vList,#vRec,#vTodo,#vGmap,.noprint,#toast{display:none!important}
   .hero{padding:0;border:0}.wx{padding:.25rem}
   #vWeek{display:block!important}
   .wrap{max-width:none;padding:0}
@@ -255,15 +308,28 @@ dialog h2{font-size:1.375rem;letter-spacing:-.015em;line-height:1.2;margin:0}
 </head>
 <body>
 <div class="sky"></div>
+<div id="progress" aria-hidden="true"></div>
+<div class="snow" id="snow" aria-hidden="true"></div>
 <div class="wrap">
   <header class="top">
     <div class="hero glass">
       <div class="hrow">
+        <span class="kicker">Hokkaido · Winter 2026</span>
+        <button class="me" id="meBtn" type="button"><i id="meIcon">?</i><b id="meName">누구세요?</b></button>
+      </div>
+      <div class="herogrid">
         <div>
-          <h1>삿포로 여행 계획표</h1>
-          <div class="sub">2026년 12월 13일(일) ~ 17일(목) · 4박 5일 · 3명</div>
+          <h1>삿포로,<br>눈 오는 5일<em>2026. 12. 13 (일) — 12. 17 (목) · 강동현 · 김도현 · 김정범</em></h1>
+          <div class="sub" style="display:none">2026년 12월 13일(일) ~ 17일(목) · 4박 5일 · 3명</div>
         </div>
-        <button class="me" id="meBtn" type="button">나: <b id="meName">이름 정하기</b></button>
+        <div class="ddbig"><span>DEPARTURE</span><b id="ddbig">D-0</b></div>
+      </div>
+      <div class="route" aria-label="항공편">
+        <div class="pt"><b>ICN 12:35</b><small>12/13 인천</small></div>
+        <div class="ln"><span>KE769</span></div>
+        <div class="mid">4박 5일<br>삿포로</div>
+        <div class="ln second"><span>YP752</span></div>
+        <div class="pt" style="text-align:right"><b>ICN 17:15</b><small>12/17 신치토세 13:45 출발</small></div>
       </div>
       <div class="wxrow" id="wxrow"></div>
       <p class="wxnote" id="wxnote"></p>
@@ -379,9 +445,18 @@ dialog h2{font-size:1.375rem;letter-spacing:-.015em;line-height:1.2;margin:0}
 </dialog>
 <dialog id="nickDlg">
   <form id="nickForm" novalidate>
-    <h2>내 이름 정하기</h2>
-    <label class="f" for="fNick">글, 투표, 댓글에 표시될 이름<input id="fNick" maxlength="12" autocomplete="off"></label>
-    <div class="dacts"><button class="btn" type="button" id="nickCancel">나중에</button><button class="btn primary" type="submit">저장</button></div>
+    <h2>누구세요?</h2>
+    <p class="meta" style="margin:0">고른 이름으로 일정 등록, 투표, 댓글이 표시됩니다. 이 기기에서는 한 번만 고르면 됩니다.</p>
+    <div class="who-grid" id="whoGrid"></div>
+    <div class="dacts"><button class="btn" type="button" id="nickCancel">나중에</button></div>
+  </form>
+</dialog>
+<dialog id="passDlg">
+  <form id="passForm" novalidate>
+    <h2>여행 암호</h2>
+    <p class="meta" style="margin:0">세 명이 같은 암호를 넣으면 같은 일정이 보입니다. 암호를 모르는 사람은 일정을 볼 수 없습니다.</p>
+    <label class="f" for="fPass">암호 (6자 이상)<input id="fPass" type="password" minlength="6" maxlength="40" autocomplete="off"><span class="err" id="ePass" hidden>6자 이상 입력해 주세요.</span></label>
+    <div class="dacts"><button class="btn primary" type="submit">들어가기</button></div>
   </form>
 </dialog>
 <div id="toast" role="status"></div>
@@ -497,7 +572,9 @@ const CENTER=[43.0621,141.3544];
 let store=null,shared=false,connErr=false,loaded=false;
 let items=[],comments=[],drafts={},openT={},editing=null,formCat="plan",formPos=null,armed=null,selDay="12-13";
 let showRec=true,showZones=true;
-let me="";try{me=localStorage.getItem("trip-nick")||""}catch(e){}
+let me="",tripId="local";try{me=localStorage.getItem("trip-nick")||""}catch(e){}
+if(MEMBERS.indexOf(me)<0)me="";
+const MCOL={"강동현":"#1f4e79","김도현":"#b4533a","김정범":"#2f7a64"};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const won=n=>"₩"+Number(n||0).toLocaleString("ko-KR");
@@ -515,7 +592,7 @@ const voters=(it,v)=>Object.keys(it.votes||{}).filter(k=>it.votes[k]===v);
 
 /* ---------- storage: Firebase (shared) or this device only ---------- */
 function localStore(){
-  const K="trip-"+TRIP_ID,subs={};let data=null;
+  const K="trip-"+tripId,subs={};let data=null;
   try{data=JSON.parse(localStorage.getItem(K))}catch(e){}
   data=data||{items:[],comments:[]};
   const emit=n=>{try{localStorage.setItem(K,JSON.stringify(data))}catch(e){}(subs[n]||[]).forEach(cb=>cb(data[n].map(x=>Object.assign({},x))))};
@@ -529,7 +606,7 @@ function localStore(){
 async function fireStore(){
   const V="https://www.gstatic.com/firebasejs/10.12.2/";
   const [app,fs]=await Promise.all([import(V+"firebase-app.js"),import(V+"firebase-firestore.js")]);
-  const d=fs.getFirestore(app.initializeApp(FIREBASE_CONFIG)),col=n=>fs.collection(d,"trips",TRIP_ID,n);
+  const d=fs.getFirestore(app.initializeApp(FIREBASE_CONFIG)),col=n=>fs.collection(d,"trips",tripId,n);
   return {
     watch(n,cb,err){fs.onSnapshot(col(n),s=>cb(s.docs.map(x=>Object.assign({},x.data(),{id:x.id}))),err)},
     add(n,data){return fs.addDoc(col(n),data)},
@@ -604,7 +681,8 @@ function header(){
   let sum=0;items.forEach(i=>{if((i.cat==="plan"||i.decided)&&i.price)sum+=Number(i.price)||0});
   $("sum").textContent=won(sum);
   $("status").innerHTML=["flights","stays"].map(k=>{const on=items.some(i=>i.cat===k&&i.decided);return '<span class="chip'+(on?" on":"")+'">'+CATS[k].label+" "+(on?"확정":"미정")+'</span>'}).join("");
-  $("meName").textContent=me||"이름 정하기";
+  $("meName").textContent=me||"누구세요?";$("meIcon").textContent=me?me.slice(-2,-1):"?";$("meIcon").style.background=me?MCOL[me]:"";
+  $("ddbig").textContent=d>0?"D-"+d:e>=0?"여행 중":"다녀옴";
   $("wxrow").innerHTML=DAYS.map((d,i)=>{const w=wx[i];return '<button type="button" class="wx" data-day="'+d.k+'" aria-pressed="'+(selDay===d.k)+'"><span class="d"><i style="background:'+d.c+'"></i>'+d.l+' '+d.w+'</span>'+wxIcon(w.code)+'<b>'+w.hi+'° / '+w.lo+'°</b><small>'+(w.code>=71&&w.code<=86&&!(w.code>=80&&w.code<=82)?"눈 ":"강수 ")+(w.p==null?"-":w.p+"%")+'</small></button>'}).join("");
   $("wxnote").innerHTML=(wxLive?'<b>실제 예보</b> (Open-Meteo)':'<b>평년 기반 예상</b> · 출발 약 2주 전부터 실제 예보로 바뀝니다')+' · 해 뜸 06:56 · <b>해 짐 16:00</b> · 패딩, 방수 부츠, 장갑 필수';
 }
@@ -927,8 +1005,8 @@ function render(){
   const act=document.activeElement,fid=act&&act.id&&act.id.indexOf("c-")===0?act.id:null,sel=fid?act.selectionStart:0;
   header();tabs();
   let n="";
-  if(connErr)n="공유 데이터에 연결하지 못했습니다. Firebase 설정과 보안 규칙을 확인해 주세요.";
-  else if(!shared&&loaded)n="지금은 이 기기에만 저장되는 혼자 보기 모드입니다. 친구들과 함께 쓰려면 파일 맨 위 설정에 Firebase 정보를 넣어 주세요.";
+  if(connErr)n="공유 데이터에 연결하지 못했습니다. 인터넷 연결을 확인하고 새로고침해 주세요.";
+  else if(!shared&&loaded)n="지금은 이 기기에만 저장되는 혼자 보기 모드입니다.";
   else if(!loaded)n="불러오는 중…";
   $("notice").innerHTML=n?'<div class="notice glass noprint">'+esc(n)+'</div>':"";
   const v=view();
@@ -1012,12 +1090,16 @@ $("form").addEventListener("submit",e=>{
 });
 
 /* ---------- name ---------- */
-function askNick(){$("fNick").value=me;$("nickDlg").showModal()}
+function askNick(){
+  $("whoGrid").innerHTML=MEMBERS.map(n=>'<button type="button" class="who-btn" data-who="'+n+'" aria-pressed="'+(me===n)+'"><i style="background:'+MCOL[n]+'">'+n.slice(-2,-1)+'</i>'+n+'</button>').join("");
+  if(!$("nickDlg").open)$("nickDlg").showModal();
+}
 $("meBtn").addEventListener("click",askNick);
 $("nickCancel").addEventListener("click",()=>$("nickDlg").close());
-$("nickForm").addEventListener("submit",e=>{
-  e.preventDefault();const n=$("fNick").value.trim().replace(/[.\/\[\]#$]/g,"").slice(0,12);if(!n){$("fNick").focus();return}
-  me=n;try{localStorage.setItem("trip-nick",n)}catch(x){}$("nickDlg").close();render();
+$("nickForm").addEventListener("submit",e=>e.preventDefault());
+$("whoGrid").addEventListener("click",e=>{
+  const b=e.target.closest("[data-who]");if(!b)return;
+  me=b.dataset.who;try{localStorage.setItem("trip-nick",me)}catch(x){}$("nickDlg").close();toast(me+" 님으로 표시됩니다.");render();
 });
 
 /* ---------- actions ---------- */
@@ -1113,10 +1195,49 @@ function begin(s,isShared){
   s.watch("items",d=>{items=d;loaded=true;render()},()=>{connErr=true;loaded=true;render()});
   s.watch("comments",d=>{comments=d;render()},()=>{});
 }
+async function hashId(code){
+  const t="sapporo-2026|"+code.trim();
+  try{const h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return "t"+Array.from(new Uint8Array(h)).slice(0,16).map(b=>b.toString(16).padStart(2,"0")).join("")}
+  catch(e){let a=5381,b=52711;for(const ch of t){const c=ch.charCodeAt(0);a=(a*33)^c;b=(b*31+c)|0}return "t"+(a>>>0).toString(16)+(b>>>0).toString(16)+t.length}
+}
+async function connect(code){
+  tripId=await hashId(code);
+  try{localStorage.setItem("trip-code",code)}catch(e){}
+  fireStore().then(s=>begin(s,true)).catch(()=>{connErr=true;begin(localStore(),false)});
+  if(!me)setTimeout(askNick,300);
+}
+$("passForm").addEventListener("submit",e=>{
+  e.preventDefault();const v=$("fPass").value.trim();
+  if(v.length<6){$("ePass").hidden=false;$("fPass").focus();return}
+  $("passDlg").close();connect(v);
+});
+$("passDlg").addEventListener("cancel",e=>e.preventDefault());
 render();
-if(FIREBASE_CONFIG)fireStore().then(s=>begin(s,true)).catch(()=>{connErr=true;begin(localStore(),false)});
-else begin(localStore(),false);
-if(!me)setTimeout(askNick,400);
+if(FIREBASE_CONFIG){
+  let code="";try{code=localStorage.getItem("trip-code")||""}catch(e){}
+  const q=new URLSearchParams(location.search).get("k");
+  if(q){code=q;history.replaceState(null,"",location.pathname+location.hash)}
+  if(code.length>=6)connect(code);else{$("passDlg").showModal();setTimeout(()=>$("fPass").focus(),50)}
+}else{begin(localStore(),false);if(!me)setTimeout(askNick,400)}
+
+/* ---------- light motion: scroll progress, reveal, snow (off on weak devices / reduced motion) ---------- */
+(function(){
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let tick=false;
+  addEventListener("scroll",()=>{if(tick)return;tick=true;requestAnimationFrame(()=>{const h=document.documentElement;const p=h.scrollTop/Math.max(1,h.scrollHeight-h.clientHeight);$("progress").style.transform="scaleX("+p+")";tick=false})},{passive:true});
+  if(!reduce&&"IntersectionObserver" in window){
+    const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target)}}),{rootMargin:"0px 0px -8% 0px"});
+    const scan=()=>document.querySelectorAll(".card:not(.reveal),.tile:not(.reveal),.agcol:not(.reveal)").forEach(el=>{el.classList.add("reveal");io.observe(el)});
+    new MutationObserver(()=>{clearTimeout(scan.t);scan.t=setTimeout(scan,60)}).observe(document.body,{childList:true,subtree:true});scan();
+  }
+  const weak=(navigator.hardwareConcurrency||8)<=4||(navigator.deviceMemory||8)<=4;
+  if(!reduce&&!weak){
+    const box=$("snow");let h="";
+    for(let i=0;i<22;i++){const sz=(2+Math.random()*4).toFixed(1);h+='<i style="left:'+(Math.random()*100).toFixed(1)+'%;width:'+sz+'px;height:'+sz+'px;--dx:'+(Math.random()*60-30).toFixed(0)+'px;animation-duration:'+(9+Math.random()*10).toFixed(1)+'s;animation-delay:-'+(Math.random()*15).toFixed(1)+'s"></i>'}
+    box.innerHTML=h;
+    document.addEventListener("visibilitychange",()=>{box.style.display=document.hidden?"none":""});
+  }
+})();
 })();
 </script>
 </body>
