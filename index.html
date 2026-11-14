@@ -302,7 +302,8 @@ dialog h2{font:900 22px/1.2 var(--serif);margin:0}
 /* ---------- export (off-screen) ---------- */
 #exportRoot{position:fixed;left:-20000px;top:0;width:1123px;color:#0E2238;background:#fff;font-family:var(--font)}
 #exportRoot{--surface:#fff;--solid:#fff;--line:#c9d3df;--muted:#4D6481;--ink:#0E2238;--field:#F3F6FA}
-.xpage .ag.isMeal{background:#FFF4EA}
+.xpage .ag.isMeal{background:#FFF3E8;box-shadow:none;border-left:3px solid var(--mc);padding-left:5px}
+.xpage .ag b,.xpage .num{font-variant-numeric:normal}
 .xpage{width:1123px;height:794px;padding:28px 30px;background:#fff;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:12px}
 .xhead{display:flex;align-items:flex-end;justify-content:space-between}
 .xhead h1{margin:0;font:900 30px/1 var(--serif);color:#0E2238}
@@ -311,9 +312,10 @@ dialog h2{font:900 22px/1.2 var(--serif);margin:0}
 .xpage .agcol{box-shadow:none;background:#fff;border-color:#c9d3df;border-radius:12px}
 .xpage .ag{padding:3px 8px;font-size:11px}
 .xpage .agmeals{font-size:10.5px;padding:6px 8px}
-.xmaps{flex:1;display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:8px}
+.xmaps{flex:1;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:8px}
 .xmap{position:relative;border:1px solid #c9d3df;border-radius:10px;overflow:hidden}
-.xmap:first-child{grid-row:span 2}
+.xlegend{border:1px solid #c9d3df;border-radius:10px;padding:14px 16px;font-size:12.5px;line-height:1.7;color:#0E2238}
+.xlegend b{font-size:14px}
 .xmap>div{position:absolute;inset:0}
 .xmap>span{position:absolute;z-index:600;left:8px;top:8px;background:#071B33;color:#fff;font-weight:800;font-size:13px;padding:3px 10px;border-radius:8px}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
@@ -957,17 +959,17 @@ async function saveBlob(blob,name){
 async function buildPages(){
   const root=$("exportRoot");
   root.innerHTML='<div class="xpage" id="xp1"><div class="xhead"><h1>삿포로, 눈 오는 5일</h1><p>2026.12.13 (일) — 12.17 (목) · 강동현 · 김도현 · 김정범 · KE769 / YP752</p></div><div class="agrid">'+agendaHtml(true)+'</div></div>'+
-    '<div class="xpage" id="xp2"><div class="xhead"><h1>동선 지도</h1><p>'+DAYS.map(d=>'<span style="color:'+d.c+';font-weight:800">● '+d.n+'일차</span>').join(" &nbsp;")+' · 번호는 1쪽 순서 · 점선=도보, 긴 점선=대중교통, 실선=택시</p></div>'+
-    '<div class="xmaps"><div class="xmap"><div id="xm1"></div><span>삿포로 시내</span></div><div class="xmap"><div id="xm2"></div><span>오타루</span></div><div class="xmap"><div id="xm3"></div><span>홋카이도 중부 (비에이)</span></div></div></div>';
-  const inCity=p=>p.lat>42.99&&p.lat<43.13&&p.lng>141.24&&p.lng<141.46,inOta=p=>p.lat>43.15&&p.lng<141.1;
-  const defs=[["xm1",[CENTER,13]],["xm2",[[43.195,141.0],14]],["xm3",[[43.3,141.9],8]]],maps=[],waits=[];
-  defs.forEach(([id,def],gi)=>{
-    const m=L.map(id,{zoomControl:false,attributionControl:false,preferCanvas:true,fadeAnimation:false,zoomAnimation:false,zoomSnap:.25});
+    '<div class="xpage" id="xp2"><div class="xhead"><h1>날짜별 동선 지도</h1><p>번호는 1쪽 일정표 순서와 같습니다</p></div>'+
+    '<div class="xmaps">'+DAYS.map(d=>'<div class="xmap"><div id="xm-'+d.k+'"></div><span style="background:'+d.c+'">'+d.n+'일차 · '+d.l+' ('+d.w+')</span></div>').join("")+
+    '<div class="xlegend"><b>보는 법</b><br>● 숫자: 방문 순서<br>● 테두리 색 핀: 식사 장소 (주황=아침, 빨강=점심, 자주=저녁)<br>● 검은 네모 "숙": 숙소<br>····· 도보 &nbsp; – – – 대중교통 &nbsp; ━ 택시·버스<br><br>실제 경로와 탈 것은 앱의 구간 버튼을 누르면 구글 지도로 확인할 수 있습니다.</div></div></div>';
+  const maps=[],waits=[],b=pos(baseItem());
+  DAYS.forEach(D=>{
+    const m=L.map("xm-"+D.k,{zoomControl:false,attributionControl:false,preferCanvas:true,fadeAnimation:false,zoomAnimation:false,zoomSnap:.25});
     const t=L.tileLayer(TILES.esri[0],Object.assign({},TILES.esri[1],{crossOrigin:"anonymous"})).addTo(m);
     const lg=L.layerGroup().addTo(m);
-    const pts=drawRoutes(lg,DAYS,{static:true,size:24}).filter(p=>gi===0?inCity(p):gi===1?inOta(p):true);
-    const b=pos(baseItem());if(b&&gi===0){pts.push(b);L.marker(b,{icon:L.divIcon({className:"",html:'<div class="mk hotel" style="width:24px;height:24px;line-height:20px;font-size:11px">숙</div>',iconSize:[24,24],iconAnchor:[12,12]})}).addTo(lg)}
-    if(pts.length>1)m.fitBounds(pts.map(p=>[p.lat,p.lng]),{padding:[30,30],maxZoom:gi===2?10:16});else if(pts.length)m.setView(pts[0],14);else m.setView(def[0],def[1]);
+    const pts=drawRoutes(lg,[D],{static:true,size:22});
+    if(b&&D.k!=="12-13"||b&&pts.length){pts.push(b);L.marker(b,{icon:L.divIcon({className:"",html:'<div class="mk hotel" style="width:22px;height:22px;line-height:18px;font-size:10px">숙</div>',iconSize:[22,22],iconAnchor:[11,11]})}).addTo(lg)}
+    if(pts.length>1)m.fitBounds(pts.map(p=>[p.lat,p.lng]),{padding:[26,26],maxZoom:15});else if(pts.length)m.setView(pts[0],14);else m.setView(CENTER,12);
     waits.push(new Promise(r=>{let done=false;const fin=()=>{if(!done){done=true;r()}};t.on("load",fin);setTimeout(fin,9000)}));maps.push(m);
   });
   await Promise.all(waits);await new Promise(r=>setTimeout(r,400));
